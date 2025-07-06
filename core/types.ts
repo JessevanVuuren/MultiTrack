@@ -13,10 +13,10 @@ export interface Audio {
 
 export interface Export {
     data: any
-    frame: number
     name: string
-    subDirectories: string[]
+    frame: number
     mimeType: string
+    subDirectories: string[]
 }
 
 export interface SaveState {

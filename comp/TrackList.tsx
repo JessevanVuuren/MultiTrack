@@ -1,7 +1,7 @@
 /* @jsxImportSource preact */
+import { MultiTrackProps } from '../core/types'
 import { TrackLineComp } from './TrackLine'
 import { Button } from '@motion-canvas/ui'
-import { MultiTrackProps } from '../core/types'
 import { add_track } from '../core/wave'
 import { styles } from '../style/styles'
 

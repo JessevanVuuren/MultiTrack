@@ -1,7 +1,7 @@
 /* @jsxImportSource preact */
 import { Button, Separator } from '@motion-canvas/ui'
-import { useEffect, useState } from 'preact/hooks'
 import { Audio, AudioFileProps } from '../core/types'
+import { useEffect, useState } from 'preact/hooks'
 import { format_duration } from "../core/utils"
 import { audio_polyline } from '../core/wave'
 import { styles } from '../style/styles'

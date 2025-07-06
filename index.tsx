@@ -8,8 +8,8 @@ import { load_saved_state, save_state } from './core/local'
 import { createPortal } from 'preact/compat'
 import { createElement } from 'preact'
 
-import { AudioFileComp } from './comps/AudioFile'
-import { TrackListComp } from './comps/TrackList'
+import { AudioFileComp } from './comp/AudioFile'
+import { TrackListComp } from './comp/TrackList'
 
 const audio_ctx = new AudioContext()
 

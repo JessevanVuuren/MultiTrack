@@ -1,7 +1,7 @@
 /* @jsxImportSource preact */
 import { useEffect, useMemo, useRef } from 'preact/hooks'
-import { usePlayerTime } from '@motion-canvas/ui'
 import { value_to_percent, map } from "../core/utils"
+import { usePlayerTime } from '@motion-canvas/ui'
 import { build_sound_line } from '../core/wave'
 import { AudioTrackProps } from '../core/types'
 import { styles } from '../style/styles'

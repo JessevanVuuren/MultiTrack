@@ -2,8 +2,8 @@
 import { Button, Close, VolumeOff, VolumeOn } from '@motion-canvas/ui'
 import { clamp, element_contains_pointer, map } from '../core/utils'
 import { useEffect, useRef, useState } from 'preact/hooks'
-import { AudioTrackComp } from './AudioTrack'
 import { TrackLineProps } from '../core/types'
+import { AudioTrackComp } from './AudioTrack'
 import { styles } from '../style/styles'
 
 export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll, set_tracks, set_audios }) => {
