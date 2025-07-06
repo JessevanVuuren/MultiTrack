@@ -1,9 +1,9 @@
 /* @jsxImportSource preact */
 import { TrackLineComp } from './TrackLine'
 import { Button } from '@motion-canvas/ui'
-import { MultiTrackProps } from '../types'
-import { add_track } from '../wave'
-import { styles } from '../styles'
+import { MultiTrackProps } from '../core/types'
+import { add_track } from '../core/wave'
+import { styles } from '../style/styles'
 
 
 export const TrackListComp: React.FC<MultiTrackProps> = ({ audios, tracks, set_tracks, set_audios, scroll }) => {

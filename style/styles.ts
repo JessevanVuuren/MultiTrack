@@ -1,4 +1,4 @@
-import { StyleSheet } from './types';
+import { StyleSheet } from '../core/types';
 
 export const styles: StyleSheet = {
   audio_timeline_style: {

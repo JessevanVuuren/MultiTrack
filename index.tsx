@@ -1,10 +1,10 @@
 /* @jsxImportSource preact */
 import { Tab, Pane, usePlayerState, usePlayerTime, PluginTabProps, makeEditorPlugin, Tune } from '@motion-canvas/ui'
-import { promise_to_path, element_contains_pointer, value_to_percent, throttle } from "./utils"
-import { add_track, build_buffer, copy_audio, load_audio, pause_play } from './wave'
+import { promise_to_path, element_contains_pointer, value_to_percent, throttle } from "./core/utils"
+import { add_track, build_buffer, copy_audio, load_audio, pause_play } from './core/wave'
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
-import { Audio, MultiTrackProps, Track } from './types'
-import { load_saved_state, save_state } from './local'
+import { Audio, MultiTrackProps, Track } from './core/types'
+import { load_saved_state, save_state } from './core/local'
 import { createPortal } from 'preact/compat'
 import { createElement } from 'preact'
 

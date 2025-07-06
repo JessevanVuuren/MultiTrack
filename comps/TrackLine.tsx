@@ -1,10 +1,10 @@
 /* @jsxImportSource preact */
 import { Button, Close, VolumeOff, VolumeOn } from '@motion-canvas/ui'
-import { clamp, element_contains_pointer, map } from '../utils'
+import { clamp, element_contains_pointer, map } from '../core/utils'
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { AudioTrackComp } from './AudioTrack'
-import { TrackLineProps } from '../types'
-import { styles } from '../styles'
+import { TrackLineProps } from '../core/types'
+import { styles } from '../style/styles'
 
 export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll, set_tracks, set_audios }) => {
   const [knob_offset, set_knob_offset] = useState(map(track.volume, 0, 100, 14, 131))

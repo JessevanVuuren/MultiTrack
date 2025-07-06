@@ -1,10 +1,10 @@
 /* @jsxImportSource preact */
 import { useEffect, useMemo, useRef } from 'preact/hooks'
 import { usePlayerTime } from '@motion-canvas/ui'
-import { value_to_percent, map } from "../utils"
-import { build_sound_line } from '../wave'
-import { AudioTrackProps } from '../types'
-import { styles } from '../styles'
+import { value_to_percent, map } from "../core/utils"
+import { build_sound_line } from '../core/wave'
+import { AudioTrackProps } from '../core/types'
+import { styles } from '../style/styles'
 
 export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, scroll }) => {
   const line = useMemo(() => {
