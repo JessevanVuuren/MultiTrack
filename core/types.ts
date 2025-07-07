@@ -38,14 +38,20 @@ export interface StyleSheet {
 export type MultiTrackProps = {
     set_tracks: Dispatch<StateUpdater<Track[]>>
     set_audios: Dispatch<StateUpdater<Audio[]>>
-
+    audios: Audio[]
+    tracks: Track[]
     scroll: number
+}
+
+export type RecordProps = {
+    set_tracks: Dispatch<StateUpdater<Track[]>>
+    set_audios: Dispatch<StateUpdater<Audio[]>>
     audios: Audio[]
     tracks: Track[]
 }
 
 export type AudioFileProps = {
-    update_audio:(a:Audio) => void
+    update_audio: (a: Audio) => void
     audio: Audio
 }
 
@@ -58,6 +64,6 @@ export type TrackLineProps = {
     set_tracks: Dispatch<StateUpdater<Track[]>>
     set_audios: Dispatch<StateUpdater<Audio[]>>
     audios: Audio[]
-    scroll: number
     track: Track
+    scroll: number
 }

@@ -27,8 +27,11 @@ export const load_audios = async (paths: string[], ctx: AudioContext, track_id: 
 export const load_audio = async (path: string, ctx: AudioContext, track_id: string) => {
   const buffer = await get_source_buffer(ctx, path)
   const file_name_rx = /[ \w-]+?(?=\.)/
+  return build_audio(file_name_rx.exec(path)[0], buffer, path, track_id)
+}
 
-  const audio: Audio = {
+export const build_audio = (name:string, buffer: AudioBuffer, path: string, track_id: string): Audio => {
+  return {
     offset: 0,
     id: uid(),
     source: path,
@@ -36,10 +39,8 @@ export const load_audio = async (path: string, ctx: AudioContext, track_id: stri
     buffer: buffer,
     track_id: track_id,
     duration: buffer.duration,
-    name: file_name_rx.exec(path)[0],
+    name: name,
   }
-
-  return audio
 }
 
 export const add_track = (is_main = false): Track => {
@@ -48,7 +49,7 @@ export const add_track = (is_main = false): Track => {
     id: id,
     muted: false,
     volume: 100,
-    main:is_main
+    main: is_main
   }
 }
 
@@ -78,10 +79,10 @@ export const pause_play = (state: boolean, source: MutableRef<AudioBufferSourceN
   else stop(source)
 }
 
-export const build_sound_line = (buffer: number[], n_points:number): number[][] => {
+export const build_sound_line = (buffer: number[], n_points: number): number[][] => {
   const point_size = buffer.length / n_points
   const points_lists = []
-  
+
   for (let i = 0; i < buffer.length; i += point_size) {
     points_lists.push(buffer.slice(i, i + point_size))
   }
@@ -138,6 +139,29 @@ export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBu
       right_destination[i + offset] += right_source[i]
     }
   })
+}
 
-  // return buffer
+export const blob_to_AudioBuffer = async (blob_part: BlobPart[], mime_type: string) => {
+  const blob = new Blob(blob_part, { type: mime_type })
+
+  const audio_context = new AudioContext();
+  const file_reader = new FileReader();
+
+  return new Promise<AudioBuffer | null>((res, rej) => {
+    file_reader.onloadend = () => {
+      const array_buffer = file_reader.result as ArrayBuffer
+      audio_context.decodeAudioData(array_buffer, (audio_buffer) => {
+        res(audio_buffer)
+      })
+    }
+
+    file_reader.onerror = (error) => {
+      console.log(error)
+      res(null)
+    }
+
+    file_reader.readAsArrayBuffer(blob)
+  })
+
+
 }

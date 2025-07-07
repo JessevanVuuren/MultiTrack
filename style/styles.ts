@@ -73,6 +73,7 @@ export const styles: StyleSheet = {
     right: -40,
     borderRadius: 4,
     zIndex: 10,
+    marginTop:9,
     background: "rgba(255,255,255,.1)",
     display: "flex",
     flexDirection: "column"

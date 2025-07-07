@@ -133,6 +133,9 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
             </div>
 
             {!track.main && <div style={styles.track_delete} onPointerDown={remove}><Close /></div>}
+
+
+            
           </>
         }
       </div>
