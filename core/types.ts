@@ -1,4 +1,4 @@
-import { Dispatch, StateUpdater } from "preact/hooks";
+import { Dispatch, MutableRef, StateUpdater } from "preact/hooks";
 
 export interface Audio {
     id: string
@@ -8,6 +8,7 @@ export interface Audio {
     active: boolean
     duration: number
     track_id: string
+    recoding:boolean
     buffer: AudioBuffer
 }
 
@@ -44,10 +45,8 @@ export type MultiTrackProps = {
 }
 
 export type RecordProps = {
-    set_tracks: Dispatch<StateUpdater<Track[]>>
     set_audios: Dispatch<StateUpdater<Audio[]>>
-    audios: Audio[]
-    tracks: Track[]
+    audio_ctx: MutableRef<AudioContext>
 }
 
 export type AudioFileProps = {

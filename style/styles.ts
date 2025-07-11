@@ -125,5 +125,12 @@ export const styles: StyleSheet = {
     height: 5,
     backgroundColor: "white",
     width: 122
+  },
+  recording_input: {
+    backgroundColor: "var(--input-background)",
+    border: "none",
+    outline:"none",
+    paddingLeft:10,
+    color:"white"
   }
 }

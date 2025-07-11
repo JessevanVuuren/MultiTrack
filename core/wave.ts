@@ -27,19 +27,20 @@ export const load_audios = async (paths: string[], ctx: AudioContext, track_id: 
 export const load_audio = async (path: string, ctx: AudioContext, track_id: string) => {
   const buffer = await get_source_buffer(ctx, path)
   const file_name_rx = /[ \w-]+?(?=\.)/
-  return build_audio(file_name_rx.exec(path)[0], buffer, path, track_id)
+  return build_audio(file_name_rx.exec(path)[0], buffer, path, track_id, true)
 }
 
-export const build_audio = (name:string, buffer: AudioBuffer, path: string, track_id: string): Audio => {
+export const build_audio = (name: string, buffer: AudioBuffer, path: string, track_id: string, recoding:boolean): Audio => {
   return {
     offset: 0,
     id: uid(),
+    name: name,
     source: path,
     active: false,
     buffer: buffer,
+    recoding:recoding,
     track_id: track_id,
     duration: buffer.duration,
-    name: name,
   }
 }
 
@@ -141,27 +142,17 @@ export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBu
   })
 }
 
-export const blob_to_AudioBuffer = async (blob_part: BlobPart[], mime_type: string) => {
+export const blob_to_AudioBuffer = async (ctx: AudioContext, blob_part: BlobPart[], mime_type: string) => {
   const blob = new Blob(blob_part, { type: mime_type })
+  const buff = await blob.arrayBuffer()
+  const mono = await ctx.decodeAudioData(buff)
 
-  const audio_context = new AudioContext();
-  const file_reader = new FileReader();
+  const length = ctx.sampleRate * mono.duration
+  const stereo = ctx.createBuffer(2, length, ctx.sampleRate)
+  stereo.copyToChannel(mono.getChannelData(0), 0)
+  stereo.copyToChannel(mono.getChannelData(0), 1)
 
-  return new Promise<AudioBuffer | null>((res, rej) => {
-    file_reader.onloadend = () => {
-      const array_buffer = file_reader.result as ArrayBuffer
-      audio_context.decodeAudioData(array_buffer, (audio_buffer) => {
-        res(audio_buffer)
-      })
-    }
-
-    file_reader.onerror = (error) => {
-      console.log(error)
-      res(null)
-    }
-
-    file_reader.readAsArrayBuffer(blob)
-  })
-
-
+  return stereo
 }
+
+
