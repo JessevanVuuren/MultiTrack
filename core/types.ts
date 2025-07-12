@@ -3,13 +3,16 @@ import { Dispatch, MutableRef, StateUpdater } from "preact/hooks";
 export interface Audio {
     id: string
     name: string
-    offset: number
     source: string
+
+    offset: number
     active: boolean
     duration: number
     track_id: string
-    recoding:boolean
+    recoding: boolean
+
     buffer: AudioBuffer
+    buffer_line: string
 }
 
 export interface Export {
@@ -52,6 +55,11 @@ export type RecordProps = {
 export type AudioFileProps = {
     update_audio: (a: Audio) => void
     audio: Audio
+}
+
+export type AudioHierarchyProps = {
+    set_audios: Dispatch<StateUpdater<Audio[]>>
+    audios: Audio[]
 }
 
 export type AudioTrackProps = {

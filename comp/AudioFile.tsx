@@ -21,7 +21,13 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio })
 
   useEffect(() => {
     (async () => {
-      set_polyline(audio_polyline(audio.buffer, 1000))
+      if (!audio.buffer_line) {
+        const line = audio_polyline(audio.buffer, 1000)
+        audio.buffer_line = line
+        set_polyline(line)
+      } else {
+        set_polyline(audio.buffer_line)
+      }
       set_loading(false)
     })()
   }, [])
@@ -36,7 +42,7 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio })
           ? <input placeholder={audio.name} style={styles.recording_input} />
           : <p style={styles.audio_file_text}>{audio.name}</p>}
 
-        {!edit_rec && <Button onClick={() => set_edit_rec(true)}>Edit</Button>}
+        {/* {!edit_rec && <Button onClick={() => set_edit_rec(true)}>Edit</Button>} */}
 
         <div style={{ marginTop: 3 }}>
           {audio.active ?

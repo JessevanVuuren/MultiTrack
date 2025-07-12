@@ -1,19 +1,19 @@
 /* @jsxImportSource preact */
-import { Tab, Pane, usePlayerState, usePlayerTime, PluginTabProps, makeEditorPlugin, Tune } from '@motion-canvas/ui'
+import { Tab, Pane, usePlayerState, usePlayerTime, PluginTabProps, makeEditorPlugin, Tune, useApplication } from '@motion-canvas/ui'
 import { promise_to_path, element_contains_pointer, value_to_percent, throttle } from "./core/utils"
 import { add_track, build_buffer, copy_audio, load_audio, pause_play } from './core/wave'
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks'
-import { Audio, MultiTrackProps, RecordProps, Track } from './core/types'
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
+import { Audio, AudioHierarchyProps, MultiTrackProps, RecordProps, Track } from './core/types'
 import { load_saved_state, save_state } from './core/local'
 import { createPortal } from 'preact/compat'
 import { createElement } from 'preact'
 
-import { AudioFileComp } from './comp/AudioFile'
 import { TrackListComp } from './comp/TrackList'
 import { RecordComp } from './comp/RecordButton'
+import { AudioHierarchyComp } from './comp/AudioHierarchy'
 
 
-const IndexAudioHierarchy = () => {
+const MultiTrackTab = ({ tab }: PluginTabProps) => {
   const audio_ctx = useRef<AudioContext>(new AudioContext())
 
   const [tracks, set_tracks] = useState<Track[]>([])
@@ -24,19 +24,23 @@ const IndexAudioHierarchy = () => {
   const placeholder = useRef<HTMLDivElement>()
   const timeline = useRef<HTMLDivElement>()
   const controls = useRef<HTMLDivElement>()
+  const hierarchy = useRef<HTMLElement>()
 
   const audio_source = useRef<AudioBufferSourceNode>()
   const audio_buffer = useRef<AudioBuffer>()
 
   const player_state = usePlayerState()
-  const player_time = usePlayerTime()
+  const app = useApplication()
 
   const mouse_offset = useRef<number>(0)
   const selected = useRef<string>("")
 
+  const [rerender, set_rerender] = useState(0)
+
   useEffect(() => {
     if (loading) return
-    pause_play(!player_state.paused, audio_source, audio_ctx.current, audio_buffer, player_time.time)
+    const current_time = app.player.playback.frame / app.player.playback.fps
+    pause_play(!player_state.paused, audio_source, audio_ctx.current, audio_buffer, current_time)
   }, [player_state]) // pause play
 
   useEffect(() => {
@@ -88,7 +92,7 @@ const IndexAudioHierarchy = () => {
   }, []) // load audio and config
 
   useEffect(() => {
-
+    get_pane_element()
     const div_list = Array.from(document.getElementsByTagName("div"))
     const timeline_element = div_list.find(e => e.className.includes("_trackContainer"))
     const controls_element = div_list.find(e => e.className.includes("_playback"))
@@ -127,7 +131,8 @@ const IndexAudioHierarchy = () => {
     const timeOutId = setTimeout(() => {
       if (loading) return
       console.log("save to disk and rebuild")
-      build_buffer(audio_ctx.current, audio_buffer, audios, tracks, player_time.durationTime)
+      const duration_time = app.player.playback.duration / app.player.playback.fps
+      build_buffer(audio_ctx.current, audio_buffer, audios, tracks, duration_time)
       save_state(audios, tracks)
     }, 500);
 
@@ -153,6 +158,15 @@ const IndexAudioHierarchy = () => {
     const element = createElement(TrackListComp, props)
 
     return createPortal(element, placeholder.current.children[1])
+  }
+
+  const place_hierarchy = () => {
+    if (!hierarchy.current) return
+
+    const props = { audios, set_audios } as AudioHierarchyProps
+    const element = createElement(AudioHierarchyComp, props)
+
+    return createPortal(element, hierarchy.current.children[1])
   }
 
   const place_record_button = () => {
@@ -211,7 +225,10 @@ const IndexAudioHierarchy = () => {
   const move_audio = (e: PointerEvent, timeline_rect: DOMRect) => {
     const diff = e.clientX - timeline_rect.left + mouse_offset.current
     const percent = value_to_percent(diff, timeline_rect.width)
-    const seconds = (player_time.durationTime / 100) * percent
+
+    const duration_time = app.player.playback.duration / app.player.playback.fps
+
+    const seconds = (duration_time / 100) * percent
 
     set_audios(prev => prev.map(e => {
       if (e.id == selected.current) {
@@ -221,70 +238,27 @@ const IndexAudioHierarchy = () => {
     }))
   }
 
-  const update_audio = (a: Audio) => {
-    set_audios(prevAudios =>
-      prevAudios.map(audio =>
-        audio.id === a.id ? a : audio
-      )
-    );
+  const get_pane_element = async () => {
+
+    setTimeout(() => {
+      const element = document.getElementById("multi-track-pane")
+
+      if (!element) get_pane_element()
+      set_rerender(rerender + 1)
+      hierarchy.current = element
+    }, 250)
   }
 
-  return <Pane title="MultiTrack" id="custom-pane">
-    {/* {place_multi_track()} */}
-    {/* {place_record_button()} */}
-    {audios.length > 0 && audios.map(audio =>
-      <AudioFileComp key={audio.id} audio={audio} update_audio={update_audio} />)
-    }
-  </Pane>
-}
-
-
-const MultiTrackTab = ({ tab }: PluginTabProps) => {
-  const [audios, set_audios] = useState<Audio[]>([])
-  
-  const audio_ctx = useRef<AudioContext>(new AudioContext())
-  const controls = useRef<HTMLDivElement>()
-  const [controlsReady, setControlsReady] = useState(false)
-
-
-  useLayoutEffect(() => {
-
-    const div_list = Array.from(document.getElementsByTagName("div"))
-    const timeline_element = div_list.find(e => e.className.includes("_trackContainer"))
-    const controls_element = div_list.find(e => e.className.includes("_playback"))
-    if (!timeline_element) return
-
-    const holder = document.createElement("div");
-    const scene_track_element = Array.from(timeline_element.children).filter(e => {
-      return e.className.includes("_sceneTrack") || e.className.includes("_labelTrack")
-    })
-
-    scene_track_element.forEach(child => holder.appendChild(child));
-    timeline_element.appendChild(holder);
-
-    controls.current = controls_element
-    console.log(controls_element)
-
-    setControlsReady(true) // This triggers a re-render
-
-  }, []) // add timeline by injecting into _trackContainer
-
-
-  const place_record_button = () => {
-    if (!controls.current) return
-
-    const props = { set_audios, audio_ctx } as RecordProps
-    const element = createElement(RecordComp, props)
-    return createPortal(element, controls.current.children[1])
-  }
-
-
-  return <Tab title="MultiTrack" id="custom-tab" tab={tab}>
-    {controlsReady && place_record_button()}
+  return <Tab onPointerDown={get_pane_element} title="MultiTrack" id="custom-tab" tab={tab}>
+    {place_multi_track()}
+    {place_record_button()}
+    <div key={rerender}>{place_hierarchy()}</div>
     <Tune />
   </Tab>
-
 }
+
+const IndexAudioHierarchy = () => <Pane title="MultiTrack" id="multi-track-pane"><p></p></Pane>
+
 
 export default makeEditorPlugin({
   tabs: [{

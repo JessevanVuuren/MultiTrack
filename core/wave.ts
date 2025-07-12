@@ -30,17 +30,20 @@ export const load_audio = async (path: string, ctx: AudioContext, track_id: stri
   return build_audio(file_name_rx.exec(path)[0], buffer, path, track_id, true)
 }
 
-export const build_audio = (name: string, buffer: AudioBuffer, path: string, track_id: string, recoding:boolean): Audio => {
+export const build_audio = (name: string, buffer: AudioBuffer, path: string, track_id: string, recoding: boolean): Audio => {
   return {
-    offset: 0,
     id: uid(),
     name: name,
     source: path,
+
+    offset: 0,
     active: false,
-    buffer: buffer,
-    recoding:recoding,
+    recoding: recoding,
     track_id: track_id,
     duration: buffer.duration,
+
+    buffer: buffer,
+    buffer_line: ""
   }
 }
 
