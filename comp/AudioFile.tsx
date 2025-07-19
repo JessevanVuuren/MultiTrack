@@ -5,6 +5,7 @@ import { useEffect, useState } from 'preact/hooks'
 import { format_duration } from "../core/utils"
 import { audio_polyline } from '../core/wave'
 import { styles } from '../style/styles'
+import { save_audio } from '../core/local'
 
 
 export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio }) => {
@@ -32,6 +33,10 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio })
     })()
   }, [])
 
+  const save_recording = async () => {
+    save_audio(audio)
+  }
+
   return <div style={styles.audio_file}>
     <svg style={styles.svg_polyline_file} viewBox="0 0 100 100" preserveAspectRatio="none">
       <polyline points={polyline} fill="none" stroke="rgba(255, 255, 255, 0.09)" strokeWidth={0.5} />
@@ -42,9 +47,14 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio })
           ? <input placeholder={audio.name} style={styles.recording_input} />
           : <p style={styles.audio_file_text}>{audio.name}</p>}
 
-        {/* {!edit_rec && <Button onClick={() => set_edit_rec(true)}>Edit</Button>} */}
 
-        <div style={{ marginTop: 3 }}>
+
+        <div style={{ marginTop: 3, display: "flex" }}>
+
+          <div style={{ marginRight: 5 }}>
+            <Button onClick={save_recording}>save</Button>
+          </div>
+
           {audio.active ?
             <Button loading={loading} onClick={update_state}>Deactivate</Button> :
             <Button loading={loading} onClick={update_state}>Activate</Button>

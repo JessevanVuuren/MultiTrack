@@ -1,20 +1,39 @@
 /* @jsxImportSource preact */
 
-import { blob_to_AudioBuffer, build_audio } from "../core/wave"
-import { useApplication } from "@motion-canvas/ui"
-import { useRef, useState } from "preact/hooks"
-import { RecordProps } from "../core/types"
+import { blob_to_AudioBuffer, uid, unlink_audio } from "../core/wave"
+import { useApplication, usePlayerTime } from "@motion-canvas/ui"
+import { useEffect, useRef, useState } from "preact/hooks"
+import { Audio, RecordProps } from "../core/types"
 
 
 export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => {
+  const analyser = audio_ctx.current.createAnalyser()
   const [recoding, set_recording] = useState(false)
 
   const record = useRef<MediaRecorder>(null)
   const stream = useRef<MediaStream>(null)
 
-  const data = useRef<BlobPart[]>([])
+  const audio_data = useRef<BlobPart[]>([])
+  const audio_ref = useRef<Audio>()
 
+  const player_time = usePlayerTime()
   const app = useApplication()
+
+  useEffect(() => {
+    if (audio_ref.current) {
+      const duration = player_time.time - audio_ref.current.offset
+
+      audio_ref.current.realtime.push(0)
+      audio_ref.current.duration = duration
+    }
+
+    if (recoding && player_time.completion == 1) {
+      console.log("this")
+
+      stop_recording()
+    }
+  }, [player_time])
+
 
   const activate_recorder = async (): Promise<boolean> => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -23,50 +42,98 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
         const _stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         const _record = new MediaRecorder(_stream)
 
+        const source = audio_ctx.current.createMediaStreamSource(_stream);
+        source.connect(analyser);
+
         stream.current = _stream
         record.current = _record
 
         return true
 
-      } catch (err) { error_occurred(err) }
-    } else not_supported()
-  }
-
-  const toggle_record = async () => {
-    set_recording(!recoding)
-    app.player.togglePlayback()
-
-    if (!recoding && await activate_recorder()) {
-      record.current.start()
-
-      record.current.onstop = () => {
-        build()
+      } catch (err) {
+        console.error(`The following getUserMedia error occurred: ${err}`);
       }
-
-      record.current.ondataavailable = (e) => {
-        data.current.push(e.data)
-      }
-
     } else {
-      record.current.stop()
-      stream.current.getTracks().forEach(e => e.stop())
+      console.log("getUserMedia not supported on your browser!");
     }
   }
 
-  const not_supported = () => {
-    console.log("getUserMedia not supported on your browser!");
+  const toggle_record = async () => {
+
+    if (!recoding && await activate_recorder()) {
+      app.player.togglePlayback(true)
+      set_recording(true)
+
+      initialize_audio_ref()
+      record.current.start()
+
+      record.current.onstop = () => {
+        recording_to_audio()
+      }
+
+      record.current.ondataavailable = (e) => {
+        audio_data.current.push(e.data)
+      }
+
+    } else {
+      stop_recording()
+    }
   }
 
-  const error_occurred = (err: string) => {
-    console.error(`The following getUserMedia error occurred: ${err}`);
+  const stop_recording = () => {
+    app.player.togglePlayback(false)
+    set_recording(false)
+    record.current.stop()
+    stream.current.getTracks().forEach(e => e.stop())
   }
 
+  const initialize_audio_ref = () => {
+    if (!audio_ref.current) {
+      audio_ref.current = {
+        id: uid(),
+        source: "",
+        name: "rec",
 
-  const build = async () => {
-    const type = record.current.mimeType
-    const buffer = await blob_to_AudioBuffer(audio_ctx.current, data.current, type)
-    const audio = build_audio("recoding", buffer, "", "default", true)
+        offset: player_time.time,
+        duration: 0,
+        active: true,
+        track_id: "default",
+
+        realtime: [],
+        recoding: true,
+
+        buffer_line: "",
+      }
+      set_audios(prev => [...prev, audio_ref.current])
+
+    }
+  }
+
+  const remove_audio = (id: string) => {
+    set_audios(prev => prev.filter(a => a.id !== id))
+  }
+
+  const add_audio = (audio: Audio) => {
     set_audios(prev => [...prev, audio])
+  }
+
+  const recording_to_audio = async () => {
+    if (audio_ctx.current) {
+
+      const type = record.current.mimeType
+      const buffer = await blob_to_AudioBuffer(audio_ctx.current, audio_data.current, type)
+
+      const audio = unlink_audio(audio_ref.current)
+
+      audio.buffer = buffer
+      audio.recoding = false
+
+      remove_audio(audio_ref.current.id)
+      add_audio(audio)
+
+      audio_ref.current = null
+      audio_data.current = []
+    }
   }
 
   return <div onPointerDown={toggle_record} style={{ userSelect: "none" }}>

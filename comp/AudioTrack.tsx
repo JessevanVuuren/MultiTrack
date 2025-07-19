@@ -63,10 +63,10 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, scroll }) => 
 
   return (<>
     <div style={styles.canvas_container}>
-      <canvas data-audio="audio" data-id={audio.id} ref={canvas} style={styles.canvas_overlay}></canvas>
+      <canvas ref={canvas} style={styles.canvas_overlay}></canvas>
     </div>
 
-    <div ref={element} data-audio="audio" data-id={audio.id} style={{
+    <div class={"testing"} ref={element} data-audio="audio" data-id={audio.id} style={{
       ...styles.audio_track,
       marginLeft: value_to_percent(audio.offset, player.durationTime) + "%",
       width: value_to_percent(audio.duration, player.durationTime) + "%"

@@ -2,18 +2,41 @@ import { array_min_max, map } from "./utils"
 import { MutableRef } from "preact/hooks"
 import { Audio, Track } from "./types"
 
-const uid = () => {
+export const uid = () => {
   return "id" + Math.random().toString(16).slice(2)
 }
 
 export const copy_audio = (s: Audio, d: Audio) => {
   d.id = s.id
   d.name = s.name
-  d.offset = s.offset
   d.source = s.source
+
   d.active = s.active
+  d.offset = s.offset
   d.duration = s.duration
   d.track_id = s.track_id
+
+  d.buffer = s.buffer
+  d.buffer_line = s.buffer_line
+
+  d.recoding = s.recoding
+  d.realtime = s.realtime
+}
+
+export const unlink_audio = (s: Audio): Audio => {
+  return {
+    id: s.id,
+    name: s.name,
+    source: s.source,
+    active: s.active,
+    offset: s.offset,
+    duration: s.duration,
+    track_id: s.track_id,
+    buffer: s.buffer,
+    buffer_line: s.buffer_line,
+    recoding: s.recoding,
+    realtime: s.realtime,
+  }
 }
 
 export const load_audios = async (paths: string[], ctx: AudioContext, track_id: string) => {
@@ -27,20 +50,22 @@ export const load_audios = async (paths: string[], ctx: AudioContext, track_id: 
 export const load_audio = async (path: string, ctx: AudioContext, track_id: string) => {
   const buffer = await get_source_buffer(ctx, path)
   const file_name_rx = /[ \w-]+?(?=\.)/
-  return build_audio(file_name_rx.exec(path)[0], buffer, path, track_id, true)
+  return build_audio(file_name_rx.exec(path)[0], buffer, path, track_id, false, false)
 }
 
-export const build_audio = (name: string, buffer: AudioBuffer, path: string, track_id: string, recoding: boolean): Audio => {
+export const build_audio = (name: string, buffer: AudioBuffer, path: string, track_id: string, recoding: boolean, active: boolean): Audio => {
   return {
     id: uid(),
     name: name,
     source: path,
 
     offset: 0,
-    active: false,
-    recoding: recoding,
+    active: active,
     track_id: track_id,
     duration: buffer.duration,
+
+    recoding: recoding,
+    realtime: [],
 
     buffer: buffer,
     buffer_line: ""
@@ -101,8 +126,10 @@ export const build_sound_line = (buffer: number[], n_points: number): number[][]
   const step = 1 / n_points
 
   for (let i = 0; i < chunks_avg.length; i++) {
-    const x = (i * step)
+
+    const x = i * step
     const y = map(chunks_avg[i], min_max.min, min_max.max, 0, 1)
+
     points.push([x, y])
   }
 
@@ -117,16 +144,18 @@ export const play = (source: MutableRef<AudioBufferSourceNode>, ctx: AudioContex
 }
 
 export const stop = (source: MutableRef<AudioBufferSourceNode>) => {
-  source.current.stop()
-  source.current.disconnect()
-  source.current = null
+  if (source.current) {
+    source.current.stop()
+    source.current.disconnect()
+    source.current = null
+  }
 }
 
 export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBuffer>, audios: Audio[], tracks: Track[], duration: number) => {
   buffer.current = ctx.createBuffer(2, ctx.sampleRate * duration, ctx.sampleRate)
 
   audios.forEach(audio => {
-    if (!audio.active) return
+    if (!audio.active || audio.recoding) return
 
     const left_source = audio.buffer.getChannelData(0)
     const right_source = audio.buffer.getChannelData(1)

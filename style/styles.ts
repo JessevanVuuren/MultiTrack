@@ -56,6 +56,7 @@ export const styles: StyleSheet = {
     height: "100%", width: "100%"
   },
   audio_track_label: {
+    zIndex:10,
     position: "absolute",
     backgroundColor: "rgba(0, 0, 0, 0.27)",
     padding: 5,

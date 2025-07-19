@@ -9,9 +9,11 @@ export interface Audio {
     active: boolean
     duration: number
     track_id: string
-    recoding: boolean
 
-    buffer: AudioBuffer
+    recoding: boolean
+    realtime: number[]
+
+    buffer?: AudioBuffer
     buffer_line: string
 }
 
@@ -64,6 +66,10 @@ export type AudioHierarchyProps = {
 
 export type AudioTrackProps = {
     scroll: number
+    audio: Audio
+}
+
+export type RecordTrackProps = {
     audio: Audio
 }
 

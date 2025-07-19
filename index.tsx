@@ -20,6 +20,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
   const [audios, set_audios] = useState<Audio[]>([])
   const [scroll, set_scroll] = useState<number>()
   const [loading, set_loading] = useState(true)
+  const [rerender, set_rerender] = useState(0)
 
   const placeholder = useRef<HTMLDivElement>()
   const timeline = useRef<HTMLDivElement>()
@@ -35,7 +36,6 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
   const mouse_offset = useRef<number>(0)
   const selected = useRef<string>("")
 
-  const [rerender, set_rerender] = useState(0)
 
   useEffect(() => {
     if (loading) return
@@ -70,6 +70,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
             const audio_state = config.audios.find(a => audio.name == a.name)
 
             if (audio_state) {
+              audio_state.buffer = audio.buffer
               copy_audio(audio_state, audio)
             } else {
               audio.track_id = loaded_track[0].id
@@ -141,7 +142,10 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
     return () => clearTimeout(timeOutId)
   }, [audios, tracks])
 
-  const pointer_up = () => selected.current = ""
+  const pointer_up = () => {
+    selected.current = ""
+    mouse_offset.current = 0
+  }
   const on_scroll = () => set_scroll(scroll + 1)
 
   const throttled_call = useCallback(
@@ -179,13 +183,21 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
   }
 
   const pointer_down = (e: PointerEvent) => {
-    mouse_offset.current = -e.offsetX
+    // mouse_offset.current = -e.offsetX
 
-    const element = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+    const elements = document.getElementsByClassName("testing")
+    Array.from(elements).forEach(el => {
+      const rect = el.getBoundingClientRect()
 
-    if (element.dataset.audio === "audio") {
-      selected.current = element.dataset.id
-    }
+      if (element_contains_pointer(rect, e)) {
+        const html_el = el as HTMLElement
+        if (html_el.dataset.audio === "audio") {
+          selected.current = html_el.dataset.id
+          mouse_offset.current =  e.clientX - rect.left
+          console.log(html_el.dataset.id)
+        }
+      }
+    })
   }
 
   const drag_and_drop = (e: PointerEvent) => {
@@ -196,9 +208,6 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
     if (e.buttons !== 1) return
 
     const timeline_rect = timeline.current.getBoundingClientRect()
-    const over_timeline = element_contains_pointer(timeline_rect, e)
-
-    if (!over_timeline) return
 
     switch_track(e)
     move_audio(e, timeline_rect)
@@ -223,7 +232,9 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
   }
 
   const move_audio = (e: PointerEvent, timeline_rect: DOMRect) => {
-    const diff = e.clientX - timeline_rect.left + mouse_offset.current
+    const diff = e.clientX - timeline_rect.left - mouse_offset.current
+    console.log(mouse_offset.current)
+
     const percent = value_to_percent(diff, timeline_rect.width)
 
     const duration_time = app.player.playback.duration / app.player.playback.fps

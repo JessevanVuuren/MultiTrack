@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'preact/hooks'
 import { TrackLineProps } from '../core/types'
 import { AudioTrackComp } from './AudioTrack'
 import { styles } from '../style/styles'
+import { RecordTrackComp } from './RecordTrack'
 
 export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll, set_tracks, set_audios }) => {
   const [knob_offset, set_knob_offset] = useState(map(track.volume, 0, 100, 14, 131))
@@ -143,7 +144,13 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
     <div data-track="track" data-id={track.id} style={styles.track_line}>
       {audios.map(audio => {
         if (!audio.active) return
-        return <AudioTrackComp audio={audio} scroll={scroll} />
+        
+        if (audio.recoding) {
+          return <RecordTrackComp audio={audio} />
+        } else {
+          return <AudioTrackComp audio={audio} scroll={scroll} />
+
+        }
       })}
     </div>
   </div>
