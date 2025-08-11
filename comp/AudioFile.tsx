@@ -30,8 +30,6 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio, a
       set_loading(false)
     })()
 
-    console.log(audio)
-
   }, [])
 
   const save_recording = async () => {
@@ -49,6 +47,10 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio, a
 
     audio.name = name
     save_audio(audio)
+
+    audio.source = `../audio/${name}.wav`
+    update_audio(audio)
+
   }
 
   return <div style={styles.audio_file}>

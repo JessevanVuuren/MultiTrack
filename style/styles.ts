@@ -56,7 +56,7 @@ export const styles: StyleSheet = {
     height: "100%", width: "100%"
   },
   audio_track_label: {
-    zIndex:10,
+    zIndex: 10,
     position: "absolute",
     backgroundColor: "rgba(0, 0, 0, 0.27)",
     padding: 5,
@@ -74,7 +74,7 @@ export const styles: StyleSheet = {
     right: -40,
     borderRadius: 4,
     zIndex: 10,
-    marginTop:9,
+    marginTop: 9,
     background: "rgba(255,255,255,.1)",
     display: "flex",
     flexDirection: "column"
@@ -116,10 +116,16 @@ export const styles: StyleSheet = {
     alignItems: "center",
     justifyContent: "center"
   },
+  background_volume: {
+    height: 33,
+    width: 180,
+    position: "absolute",
+    top: -1,
+  },
   slider_knob: {
     height: 20,
     width: 5,
-    backgroundColor: "gray" ,
+    backgroundColor: "gray",
     position: "absolute"
   },
   slider_rail: {
@@ -130,8 +136,8 @@ export const styles: StyleSheet = {
   recording_input: {
     backgroundColor: "var(--input-background)",
     border: "none",
-    outline:"none",
-    paddingLeft:10,
-    color:"white"
+    outline: "none",
+    paddingLeft: 10,
+    color: "white"
   }
 }

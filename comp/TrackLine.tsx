@@ -9,7 +9,7 @@ import { RecordTrackComp } from './RecordTrack'
 
 export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll, set_tracks, set_audios }) => {
   const [knob_offset, set_knob_offset] = useState(map(track.volume, 0, 100, 14, 131))
-  
+
   const [volume_control, set_volume_control] = useState(false)
   const [sure_delete, set_sure_delete] = useState(false)
 
@@ -25,7 +25,7 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
       window.removeEventListener("pointermove", move)
       window.removeEventListener("pointerdown", move)
     }
-  }, [])
+  }, [volume_control])
 
   const remove = () => {
     if (!audios.length) {
@@ -69,10 +69,19 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
 
 
   const move = (e: PointerEvent) => {
+    
+    if (volume_control) {
+
+      const icon_r = volume_icon.current.getBoundingClientRect()
+
+      if (!element_contains_pointer(icon_r, e)) {
+        set_volume_control(false)
+      }
+    }
+
     if (e.buttons !== 1 || !slider_knob.current) return
 
     const slider_r = slider_rect.current.getBoundingClientRect()
-    const icon_r = volume_icon.current.getBoundingClientRect()
 
     if (element_contains_pointer(slider_r, e)) {
       const diff = e.clientX - slider_r.left
@@ -82,11 +91,6 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
 
       set_knob_offset(offset)
       set_volume(volume)
-    } else {
-      
-      if (!element_contains_pointer(icon_r, e)) {
-        set_volume_control(false)
-      }
     }
   }
 
@@ -119,14 +123,17 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
           :
           <>
             <div style={styles.track_delete} >
-              <div ref={volume_icon} onPointerDown={mute_track} onPointerOver={() => set_volume_control(true)}>
+              <div onPointerDown={mute_track} onPointerOver={() => set_volume_control(true)}>
                 {track.muted ? <VolumeOff /> : <VolumeOn />}
+                <div ref={volume_icon} style={styles.background_volume} />
               </div>
+
+
 
               {volume_control &&
                 <div ref={slider_rect} style={styles.slider_rect}>
                   <div ref={slider_knob} style={{ left: knob_offset, ...styles.slider_knob, backgroundColor: "var(--theme)" }} />
-                  {track.muted && track.volume > 0 && <div ref={slider_knob} style={{ left: knob_offset, ...styles.slider_knob, }} />}
+                  {track.muted && track.volume > 0 && <div style={{ left: knob_offset, ...styles.slider_knob, }} />}
 
                   <div style={styles.slider_rail} />
                 </div>
@@ -136,7 +143,7 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
             {!track.main && <div style={styles.track_delete} onPointerDown={remove}><Close /></div>}
 
 
-            
+
           </>
         }
       </div>
@@ -144,7 +151,7 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
     <div data-track="track" data-id={track.id} style={styles.track_line}>
       {audios.map(audio => {
         if (!audio.active) return
-        
+
         if (audio.recoding) {
           return <RecordTrackComp audio={audio} />
         } else {

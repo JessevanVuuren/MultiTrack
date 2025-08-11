@@ -47,6 +47,10 @@ export const load_audios = async (paths: string[], ctx: AudioContext, track_id: 
 
 export const load_audio = async (path: string, ctx: AudioContext, track_id: string) => {
   const buffer = await get_source_buffer(ctx, path)
+  if (!buffer) {
+    console.log("error in getting file")
+    return
+  }
   const file_name_rx = /[ \w-]+?(?=\.)/
   return build_audio(file_name_rx.exec(path)[0], buffer, path, track_id, false, false)
 }
@@ -79,10 +83,14 @@ export const add_track = (is_main = false): Track => {
   }
 }
 
-export const get_source_buffer = async (ctx: AudioContext, path: string) => {
+export const get_source_buffer = async (ctx: AudioContext, path: string): Promise<AudioBuffer | null> => {
   return await fetch(path)
     .then(res => res.arrayBuffer())
-    .then(buffer => ctx.decodeAudioData(buffer));
+    .then(buffer => ctx.decodeAudioData(buffer))
+    .catch((e):null => {
+      console.log(e)
+      return null
+    });
 }
 
 export const audio_polyline = (buffer: AudioBuffer, lod: number): string => {

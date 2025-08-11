@@ -55,7 +55,7 @@ export const save_audio = async (audio: Audio) => {
   };
 
   send_to_disk(exportData)
-  console.log("saved")
+  
 }
 
 
