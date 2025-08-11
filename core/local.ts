@@ -1,4 +1,5 @@
 import { Audio, Track, Export, SaveState } from "./types";
+import { audioBufferToWav } from "./wav"
 
 export const save_state = (audios: Audio[], tracks: Track[]) => {
   const filename = "multi-track"
@@ -6,14 +7,17 @@ export const save_state = (audios: Audio[], tracks: Track[]) => {
   const active_audio = audios.filter((audio) => { return audio.active })
   audios.forEach(a => a.buffer_line = "")
 
-  const object: SaveState = {
+  const config: SaveState = {
     audios: active_audio,
     tracks: tracks
   }
 
+  const config_string = JSON.stringify(config)
+  const config_base64 = btoa(config_string)
+
   const exportData: Export = {
     frame: 0,
-    data: object,
+    data: config_base64,
     name: filename,
     subDirectories: ['../audio'],
     mimeType: 'application/json',
@@ -22,22 +26,41 @@ export const save_state = (audios: Audio[], tracks: Track[]) => {
   send_to_disk(exportData)
 }
 
+const buffer_to_str = (wavData: ArrayBuffer) => {
+  let str = ""
+  const bytes = new Uint8Array(wavData);
+  for (let i = 0; i < bytes.length; i++) {
+    str += String.fromCharCode(bytes[i]);
+  }
+  return str
+}
+
 export const save_audio = async (audio: Audio) => {
+
+  const channelBuffers = [];
+  for (let channel = 0; channel < audio.buffer.numberOfChannels; channel++) {
+    channelBuffers.push(audio.buffer.getChannelData(channel));
+  }
+
+  const wav_data = audioBufferToWav(audio.buffer.sampleRate, channelBuffers);
+  const string_buffer = buffer_to_str(wav_data)
+  const base64 = btoa(string_buffer)
+
   const exportData: Export = {
     frame: 0,
-    data: audio.buffer,
-    name: audio.name + "wow",
+    data: base64,
+    name: audio.name,
     subDirectories: ['../audio'],
     mimeType: 'audio/wav',
   };
 
   send_to_disk(exportData)
+  console.log("saved")
 }
 
+
+
 const send_to_disk = (data: Export) => {
-  const data_string = JSON.stringify(data.data)
-  const data_base64 = btoa(data_string)
-  data.data = data_base64
 
   if (import.meta.hot) {
     import.meta.hot.send('motion-canvas:export', data);

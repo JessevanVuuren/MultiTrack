@@ -12,9 +12,10 @@ import { TrackListComp } from './comp/TrackList'
 import { RecordComp } from './comp/RecordButton'
 import { AudioHierarchyComp } from './comp/AudioHierarchy'
 
+// const audio_ctx = useRef<AudioContext>(new AudioContext())
+const audio_ctx = new AudioContext()
 
 const MultiTrackTab = ({ tab }: PluginTabProps) => {
-  const audio_ctx = useRef<AudioContext>(new AudioContext())
 
   const [tracks, set_tracks] = useState<Track[]>([])
   const [audios, set_audios] = useState<Audio[]>([])
@@ -40,7 +41,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
   useEffect(() => {
     if (loading) return
     const current_time = app.player.playback.frame / app.player.playback.fps
-    pause_play(!player_state.paused, audio_source, audio_ctx.current, audio_buffer, current_time)
+    pause_play(!player_state.paused, audio_source, audio_ctx, audio_buffer, current_time)
   }, [player_state]) // pause play
 
   useEffect(() => {
@@ -56,7 +57,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
       for await (const path of paths) {
         if (path.includes("multi-track.json")) continue
 
-        const audio = await load_audio(path, audio_ctx.current, "")
+        const audio = await load_audio(path, audio_ctx, "")
         loaded_audio.push(audio)
       }
 
@@ -133,7 +134,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
       if (loading) return
       console.log("save to disk and rebuild")
       const duration_time = app.player.playback.duration / app.player.playback.fps
-      build_buffer(audio_ctx.current, audio_buffer, audios, tracks, duration_time)
+      build_buffer(audio_ctx, audio_buffer, audios, tracks, duration_time)
       save_state(audios, tracks)
     }, 500);
 
@@ -233,12 +234,8 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
 
   const move_audio = (e: PointerEvent, timeline_rect: DOMRect) => {
     const diff = e.clientX - timeline_rect.left - mouse_offset.current
-    console.log(mouse_offset.current)
-
     const percent = value_to_percent(diff, timeline_rect.width)
-
     const duration_time = app.player.playback.duration / app.player.playback.fps
-
     const seconds = (duration_time / 100) * percent
 
     set_audios(prev => prev.map(e => {

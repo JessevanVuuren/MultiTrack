@@ -15,7 +15,7 @@ export const AudioHierarchyComp: React.FC<AudioHierarchyProps> = ({ audios, set_
   return <div>
     {audios.length > 0 && audios.map(audio => {
       if (audio.recoding) return
-      return <AudioFileComp key={audio.id} audio={audio} update_audio={update_audio} />
+      return <AudioFileComp key={audio.id} audio={audio} update_audio={update_audio} audios={audios} />
     })}
   </div>
 }

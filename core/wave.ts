@@ -20,7 +20,6 @@ export const copy_audio = (s: Audio, d: Audio) => {
   d.buffer_line = s.buffer_line
 
   d.recoding = s.recoding
-  d.realtime = s.realtime
 }
 
 export const unlink_audio = (s: Audio): Audio => {
@@ -35,7 +34,6 @@ export const unlink_audio = (s: Audio): Audio => {
     buffer: s.buffer,
     buffer_line: s.buffer_line,
     recoding: s.recoding,
-    realtime: s.realtime,
   }
 }
 
@@ -65,7 +63,6 @@ export const build_audio = (name: string, buffer: AudioBuffer, path: string, tra
     duration: buffer.duration,
 
     recoding: recoding,
-    realtime: [],
 
     buffer: buffer,
     buffer_line: ""

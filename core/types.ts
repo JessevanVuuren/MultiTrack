@@ -11,7 +11,6 @@ export interface Audio {
     track_id: string
 
     recoding: boolean
-    realtime: number[]
 
     buffer?: AudioBuffer
     buffer_line: string
@@ -51,11 +50,12 @@ export type MultiTrackProps = {
 
 export type RecordProps = {
     set_audios: Dispatch<StateUpdater<Audio[]>>
-    audio_ctx: MutableRef<AudioContext>
+    audio_ctx: AudioContext
 }
 
 export type AudioFileProps = {
     update_audio: (a: Audio) => void
+    audios: Audio[]
     audio: Audio
 }
 

@@ -8,16 +8,14 @@ import { styles } from '../style/styles'
 import { save_audio } from '../core/local'
 
 
-export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio }) => {
+export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio, audios }) => {
   const [polyline, set_polyline] = useState("")
 
   const [loading, set_loading] = useState(true)
-  const [edit_rec, set_edit_rec] = useState(false)
 
   const update_state = () => {
     const a: Audio = { ...audio, active: !audio.active }
     update_audio(a)
-
   }
 
   useEffect(() => {
@@ -31,9 +29,25 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio })
       }
       set_loading(false)
     })()
+
+    console.log(audio)
+
   }, [])
 
   const save_recording = async () => {
+    const name = prompt("Name of audio file:")
+
+    if (!name) {
+      alert("Filename cannot be empty")
+      return
+    }
+
+    if (audios.some(e => e.name == name)) {
+      alert("Filename already exists")
+      return
+    }
+
+    audio.name = name
     save_audio(audio)
   }
 
@@ -43,17 +57,15 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio })
     </svg>
     <div style={styles.audio_file_padding}>
       <div style={styles.audio_file_container}>
-        {audio.recoding && edit_rec
-          ? <input placeholder={audio.name} style={styles.recording_input} />
-          : <p style={styles.audio_file_text}>{audio.name}</p>}
 
-
-
+        <p style={styles.audio_file_text}>{audio.name}</p>
         <div style={{ marginTop: 3, display: "flex" }}>
 
-          <div style={{ marginRight: 5 }}>
-            <Button onClick={save_recording}>save</Button>
-          </div>
+          {audio.source == "" &&
+            <div style={{ marginRight: 5 }}>
+              <Button onClick={save_recording}>save</Button>
+            </div>
+          }
 
           {audio.active ?
             <Button loading={loading} onClick={update_state}>Deactivate</Button> :

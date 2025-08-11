@@ -7,7 +7,7 @@ import { Audio, RecordProps } from "../core/types"
 
 
 export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => {
-  const analyser = audio_ctx.current.createAnalyser()
+  const analyser = audio_ctx.createAnalyser()
   const [recoding, set_recording] = useState(false)
 
   const record = useRef<MediaRecorder>(null)
@@ -22,8 +22,6 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
   useEffect(() => {
     if (audio_ref.current) {
       const duration = player_time.time - audio_ref.current.offset
-
-      audio_ref.current.realtime.push(0)
       audio_ref.current.duration = duration
     }
 
@@ -42,7 +40,7 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
         const _stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         const _record = new MediaRecorder(_stream)
 
-        const source = audio_ctx.current.createMediaStreamSource(_stream);
+        const source = audio_ctx.createMediaStreamSource(_stream);
         source.connect(analyser);
 
         stream.current = _stream
@@ -92,14 +90,13 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
       audio_ref.current = {
         id: uid(),
         source: "",
-        name: "rec",
+        name: "recording",
 
         offset: player_time.time,
         duration: 0,
         active: true,
         track_id: "default",
 
-        realtime: [],
         recoding: true,
 
         buffer_line: "",
@@ -118,10 +115,10 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
   }
 
   const recording_to_audio = async () => {
-    if (audio_ctx.current) {
+    if (audio_ctx) {
 
       const type = record.current.mimeType
-      const buffer = await blob_to_AudioBuffer(audio_ctx.current, audio_data.current, type)
+      const buffer = await blob_to_AudioBuffer(audio_ctx, audio_data.current, type)
 
       const audio = unlink_audio(audio_ref.current)
 
