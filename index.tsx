@@ -1,16 +1,16 @@
 /* @jsxImportSource preact */
-import { Tab, Pane, usePlayerState, usePlayerTime, PluginTabProps, makeEditorPlugin, Tune, useApplication } from '@motion-canvas/ui'
-import { promise_to_path, element_contains_pointer, value_to_percent, throttle } from "./core/utils"
-import { add_track, build_buffer, copy_audio, load_audio, pause_play } from './core/wave'
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
+import { Tab, Pane, usePlayerState, PluginTabProps, makeEditorPlugin, Tune, useApplication } from '@motion-canvas/ui'
 import { Audio, AudioHierarchyProps, MultiTrackProps, RecordProps, Track } from './core/types'
+import { add_track, build_buffer, copy_audio, load_audio, pause_play } from './core/wave'
+import { element_contains_pointer, value_to_percent, throttle } from "./core/utils"
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
 import { load_saved_state, save_state } from './core/local'
 import { createPortal } from 'preact/compat'
 import { createElement } from 'preact'
 
+import { AudioHierarchyComp } from './comp/AudioHierarchy'
 import { TrackListComp } from './comp/TrackList'
 import { RecordComp } from './comp/RecordButton'
-import { AudioHierarchyComp } from './comp/AudioHierarchy'
 
 // const audio_ctx = useRef<AudioContext>(new AudioContext())
 const audio_ctx = new AudioContext()
@@ -47,22 +47,22 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
   useEffect(() => {
 
     (async () => {
-      const files = import.meta.glob('../audio/*')
-      const paths = await promise_to_path(files)
-      let state = paths.find(f => f.includes("multi-track.json"))
+      const files = await (await fetch("/audios")).json() as string[]
+  
+      let state = files.find(f => f.includes("multi-track.json"))
 
       const loaded_audio: Audio[] = []
       const loaded_track: Track[] = []
 
-      for await (const path of paths) {
+      for await (const path of files) {
         if (path.includes("multi-track.json")) continue
 
-        const audio = await load_audio(path, audio_ctx, "")
+        const audio = await load_audio("./audio/" + path, audio_ctx, "")
         loaded_audio.push(audio)
       }
 
       if (state) {
-        const config = await load_saved_state(state)
+        const config = await load_saved_state("./audio/" + state)
 
         if (config) {
           loaded_track.push(...config.tracks)
@@ -184,8 +184,6 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
   }
 
   const pointer_down = (e: PointerEvent) => {
-    // mouse_offset.current = -e.offsetX
-
     const elements = document.getElementsByClassName("testing")
     Array.from(elements).forEach(el => {
       const rect = el.getBoundingClientRect()

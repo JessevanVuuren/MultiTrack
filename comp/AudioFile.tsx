@@ -1,21 +1,25 @@
 /* @jsxImportSource preact */
 import { Button, Separator } from '@motion-canvas/ui'
-import { Audio, AudioFileProps } from '../core/types'
 import { useEffect, useState } from 'preact/hooks'
 import { format_duration } from "../core/utils"
+import { AudioFileProps } from '../core/types'
 import { audio_polyline } from '../core/wave'
-import { styles } from '../style/styles'
 import { save_audio } from '../core/local'
+import { styles } from '../style/styles'
 
 
-export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio, audios }) => {
+export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, audios }) => {
   const [polyline, set_polyline] = useState("")
 
   const [loading, set_loading] = useState(true)
 
-  const update_state = () => {
-    const a: Audio = { ...audio, active: !audio.active }
-    update_audio(a)
+  const update_state = async () => {
+    set_audios(prev => prev.map(a => {
+      if (a.id == audio.id) {
+        a.active = !audio.active
+      }
+      return a
+    }))
   }
 
   useEffect(() => {
@@ -46,11 +50,20 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio, a
     }
 
     audio.name = name
-    save_audio(audio)
+    save_audio(audio, name)
 
-    audio.source = `../audio/${name}.wav`
-    update_audio(audio)
+    set_audios(prev => prev.map(a => {
+      if (a.id == audio.id) {
+        a.name = name
+        a.source = `../audio/${name}.wav`
+      }
 
+      return a
+    }))
+  }
+
+  const remove_recording = () => {
+    set_audios(prev => prev.filter(a => a.id !== audio.id))
   }
 
   return <div style={styles.audio_file}>
@@ -64,8 +77,9 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, update_audio, a
         <div style={{ marginTop: 3, display: "flex" }}>
 
           {audio.source == "" &&
-            <div style={{ marginRight: 5 }}>
-              <Button onClick={save_recording}>save</Button>
+            <div style={{ display: "flex" }}>
+              <Button style={{ marginRight: 5 }} onClick={save_recording}>save</Button>
+              <Button style={{ marginRight: 5 }} onClick={remove_recording}>remove</Button>
             </div>
           }
 

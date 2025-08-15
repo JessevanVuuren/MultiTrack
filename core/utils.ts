@@ -44,18 +44,3 @@ export const array_min_max = (arr: number[]) => {
 export const format_duration = (seconds: number) => {
   return new Date(seconds * 1000).toISOString().substring(14, 19)
 }
-
-export const promise_to_path = async (files: Record<string, () => Promise<unknown>>): Promise<string[]> => {
-  const paths: string[] = []
-
-  const entries = Object.entries(files)
-
-  await Promise.all(
-    entries.map(async ([path, importer]) => {
-      await importer()
-      paths.push(path)
-    })
-  )
-
-  return paths
-}

@@ -54,7 +54,7 @@ export type RecordProps = {
 }
 
 export type AudioFileProps = {
-    update_audio: (a: Audio) => void
+    set_audios: Dispatch<StateUpdater<Audio[]>>
     audios: Audio[]
     audio: Audio
 }

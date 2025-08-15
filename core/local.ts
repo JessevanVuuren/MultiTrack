@@ -35,7 +35,7 @@ const buffer_to_str = (wavData: ArrayBuffer) => {
   return str
 }
 
-export const save_audio = async (audio: Audio) => {
+export const save_audio = async (audio: Audio, name: string) => {
 
   const channelBuffers = [];
   for (let channel = 0; channel < audio.buffer.numberOfChannels; channel++) {
@@ -49,13 +49,13 @@ export const save_audio = async (audio: Audio) => {
   const exportData: Export = {
     frame: 0,
     data: base64,
-    name: audio.name,
+    name: name,
     subDirectories: ['../audio'],
     mimeType: 'audio/wav',
   };
 
   send_to_disk(exportData)
-  
+
 }
 
 
