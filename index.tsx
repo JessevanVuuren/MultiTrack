@@ -137,9 +137,10 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
       build_buffer(audio_ctx, audio_buffer, audios, tracks, duration_time)
       save_state(audios, tracks)
     }, 500);
-
+    
     throttled_call(on_scroll)
-
+    
+    app.player.togglePlayback(false)
     return () => clearTimeout(timeOutId)
   }, [audios, tracks])
 

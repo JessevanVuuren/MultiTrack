@@ -87,7 +87,7 @@ export const get_source_buffer = async (ctx: AudioContext, path: string): Promis
   return await fetch(path)
     .then(res => res.arrayBuffer())
     .then(buffer => ctx.decodeAudioData(buffer))
-    .catch((e):null => {
+    .catch((e): null => {
       console.log(e)
       return null
     });
@@ -162,6 +162,8 @@ export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBu
   audios.forEach(audio => {
     if (!audio.active || audio.recoding) return
 
+    const audio_volume = get_track_volume(audio.track_id, tracks)
+
     const left_source = audio.buffer.getChannelData(0)
     const right_source = audio.buffer.getChannelData(1)
 
@@ -173,10 +175,15 @@ export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBu
     const len = Math.min(available_space, audio.buffer.length)
 
     for (let i = 0; i < len; i++) {
-      left_destination[i + offset] += left_source[i]
-      right_destination[i + offset] += right_source[i]
+      left_destination[i + offset] += left_source[i] * (audio_volume / 100)
+      right_destination[i + offset] += right_source[i] * (audio_volume / 100)
     }
   })
+}
+
+const get_track_volume = (track_id: string, tracks: Track[]): number => {
+  const track = tracks.find(t => t.id == track_id)
+  return track.volume
 }
 
 export const blob_to_AudioBuffer = async (ctx: AudioContext, blob_part: BlobPart[], mime_type: string) => {

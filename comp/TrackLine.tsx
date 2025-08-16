@@ -57,10 +57,11 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
     set_tracks(prev => prev.map(t => {
 
       if (t.id == track.id) {
-        const v = Math.round(n)
+        const log = Math.pow(n, 2) / Math.pow(100, 2)
+        const norm = Math.round(log * 100)
 
-        t.volume = v
-        t.muted = !v
+        t.volume = norm
+        t.muted = !norm
       }
 
       return t
@@ -69,7 +70,7 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
 
 
   const move = (e: PointerEvent) => {
-    
+
     if (volume_control) {
 
       const icon_r = volume_icon.current.getBoundingClientRect()
@@ -136,6 +137,7 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
                   {track.muted && track.volume > 0 && <div style={{ left: knob_offset, ...styles.slider_knob, }} />}
 
                   <div style={styles.slider_rail} />
+
                 </div>
               }
             </div>
@@ -146,6 +148,9 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
 
           </>
         }
+        <div style={{ ...styles.volume_number, left: volume_control ? 193 : 41 }}>
+          <h2 style={{ color: "var(--theme)", margin: 0 }}>{track.volume}</h2>
+        </div>
       </div>
     </div>
     <div data-track="track" data-id={track.id} style={styles.track_line}>
@@ -160,6 +165,6 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
         }
       })}
     </div>
-  </div>
+  </div >
 
 }

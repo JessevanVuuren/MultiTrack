@@ -133,6 +133,17 @@ export const styles: StyleSheet = {
     backgroundColor: "white",
     width: 122
   },
+  volume_number: {
+    position: "absolute",
+    top: 0,
+    backgroundColor: "rgba(255,255,255,.1)",
+    height: 33,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 50,
+    borderRadius: 4,
+  },
   recording_input: {
     backgroundColor: "var(--input-background)",
     border: "none",
