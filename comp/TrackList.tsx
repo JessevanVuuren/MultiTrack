@@ -5,9 +5,7 @@ import { Button } from '@motion-canvas/ui'
 import { add_track } from '../core/wave'
 import { styles } from '../style/styles'
 
-
 export const TrackListComp: React.FC<MultiTrackProps> = ({ audios, tracks, set_tracks, set_audios, scroll }) => {
-
 
   return (
     <div style={styles.audio_timeline_style} >
@@ -22,6 +20,5 @@ export const TrackListComp: React.FC<MultiTrackProps> = ({ audios, tracks, set_t
 
       <div style={styles.add_audio_style} onPointerDown={() => set_tracks(prev => [...prev, add_track()])}><Button>add track</Button></div>
     </div>
-
   );
 }

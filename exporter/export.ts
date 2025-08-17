@@ -12,7 +12,6 @@ type FFmpegExporterOptions = ValueOf<
   ReturnType<typeof MultiExport.meta>
 >;
 
-
 export class MultiExport implements Exporter {
   public static readonly id = '@motion-canvas/ffmpeg';
   public static readonly displayName = 'MultiTrack';

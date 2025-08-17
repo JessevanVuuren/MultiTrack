@@ -10,7 +10,6 @@ import { styles } from '../style/styles'
 
 export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, audios }) => {
   const [polyline, set_polyline] = useState("")
-
   const [loading, set_loading] = useState(true)
 
   const update_state = async () => {
@@ -104,6 +103,5 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, aud
         <p style={styles.audio_duration}>{format_duration(audio.buffer.duration)}</p>
       </div>
     </div>
-
   </div>
 }

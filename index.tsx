@@ -1,10 +1,10 @@
 /* @jsxImportSource preact */
-import { Tab, Pane, usePlayerState, PluginTabProps, makeEditorPlugin, Tune, useApplication, useKeyHold } from '@motion-canvas/ui'
+import { Tab, Pane, usePlayerState, PluginTabProps, makeEditorPlugin, Tune, useApplication } from '@motion-canvas/ui'
 import { Audio, AudioHierarchyProps, MultiTrackProps, RecordProps, Track } from './core/types'
 import { add_track, build_buffer, copy_audio, load_audio, pause_play } from './core/wave'
 import { element_contains_pointer, value_to_percent, throttle } from "./core/utils"
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
 import { load_saved_state, save_audio_buffer, save_state } from './core/local'
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
 import { createPortal } from 'preact/compat'
 import { createElement } from 'preact'
 
@@ -152,7 +152,6 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
     document.addEventListener("multi-track:prepare", () => build_output_audio());
 
     const build_output_audio = async () => {
-      console.log("start output")
       await save_audio_buffer(audio_buffer.current, "multi-track-audio")
       document.dispatchEvent(new CustomEvent("multi-track:finalize"));
     }

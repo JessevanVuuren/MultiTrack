@@ -49,11 +49,9 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, scroll }) => 
     context.stroke()
   }
 
-
   useEffect(() => {
     culled_line()
   }, [scroll])
-
 
   useEffect(() => {
     canvas.current.width = canvas.current.offsetWidth
@@ -75,7 +73,6 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, scroll }) => 
       <div data-audio="audio" data-id={audio.id} style={styles.audio_track_label}>
         <p data-audio="audio" data-id={audio.id} style={styles.audio_file_text}>{audio.name}</p>
       </div>
-
     </div>
   </>
   )

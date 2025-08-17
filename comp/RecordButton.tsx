@@ -1,10 +1,8 @@
 /* @jsxImportSource preact */
-
 import { blob_to_AudioBuffer, uid, unlink_audio } from "../core/wave"
 import { useApplication, usePlayerTime } from "@motion-canvas/ui"
 import { useEffect, useRef, useState } from "preact/hooks"
 import { Audio, RecordProps } from "../core/types"
-
 
 export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => {
   const analyser = audio_ctx.createAnalyser()
@@ -26,8 +24,6 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
     }
 
     if (recoding && player_time.completion == 1) {
-      console.log("this")
-
       stop_recording()
     }
   }, [player_time])
@@ -102,7 +98,6 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
         buffer_line: "",
       }
       set_audios(prev => [...prev, audio_ref.current])
-
     }
   }
 

@@ -2,10 +2,10 @@
 import { Button, Close, VolumeOff, VolumeOn } from '@motion-canvas/ui'
 import { clamp, element_contains_pointer, map } from '../core/utils'
 import { useEffect, useRef, useState } from 'preact/hooks'
+import { RecordTrackComp } from './RecordTrack'
 import { TrackLineProps } from '../core/types'
 import { AudioTrackComp } from './AudioTrack'
 import { styles } from '../style/styles'
-import { RecordTrackComp } from './RecordTrack'
 
 export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll, set_tracks, set_audios }) => {
   const [knob_offset, set_knob_offset] = useState(map(track.volume, 0, 100, 14, 131))
@@ -50,12 +50,10 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
       return audio
     }))
 
-
     set_tracks(prev => prev.filter(t => {
       return t.id !== track.id
     }))
   }
-
 
   const set_volume = (n: number) => {
     set_tracks(prev => prev.map(t => {
@@ -133,8 +131,6 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
                 <div ref={volume_icon} style={styles.background_volume} />
               </div>
 
-
-
               {volume_control &&
                 <div ref={slider_rect} style={styles.slider_rect}>
                   <div ref={slider_knob} style={{ left: knob_offset, ...styles.slider_knob, backgroundColor: "var(--theme)" }} />
@@ -152,8 +148,6 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
 
             {!track.main && <div style={styles.track_delete} onPointerDown={remove}><Close /></div>}
 
-
-
           </>
         }
       </div>
@@ -166,7 +160,6 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
           return <RecordTrackComp audio={audio} />
         } else {
           return <AudioTrackComp audio={audio} scroll={scroll} />
-
         }
       })}
     </div>
