@@ -69,7 +69,6 @@ export class MultiExport implements Exporter {
   }
 
   public async stop(result: RendererResult): Promise<void> {
-    fetch("cleanup") // remove file "/audio/multi-track-audio.wav"
     await this.invoke('end', result);
   }
 
@@ -77,6 +76,11 @@ export class MultiExport implements Exporter {
     if (import.meta.hot) {
       return new Promise((resolve, reject) => {
         const handle = (response: ServerResponse) => {
+
+          if (response.method == "end") {
+            fetch("cleanup") // remove file "/audio/multi-track-audio.wav"
+          }
+
           if (response.method !== method) {
             return;
           }

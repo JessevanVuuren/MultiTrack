@@ -2,7 +2,7 @@ import { Plugin, PLUGIN_OPTIONS } from '@motion-canvas/vite-plugin';
 
 const fs = require('fs');
 
-export default function multiTrackPlugin(): Plugin {
+export default function MultiTrackPlugin(): Plugin {
   return {
     name: 'multi-track-audio-files',
 
