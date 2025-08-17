@@ -19,7 +19,7 @@ MultiTrack has a bunch of different features that make editing and recording aud
 - Drag and drop
 
 
-## Microhpone
+## Microphone
 
 With the [MediaStream Recording API](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API/Using_the_MediaStream_Recording_API), you can record audio and save the file locally. To start a recording, click the red button on the right in the playback controls. After clicking the button again, your recording will appear in the audio hierarchy, where it can be saved or deleted.
 
@@ -102,7 +102,7 @@ export default defineConfig({
 
 ```
 
-Start the server with `npm start` and if everything went well, a new tab has appeard in the left panel. You can now begin adding audio files to the audio folder.
+Start the server with `npm start` and if everything went well, a new tab has appeared in the left panel. You can now begin adding audio files to the audio folder.
 
 ## Rendering
 
