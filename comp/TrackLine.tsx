@@ -27,8 +27,12 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
     }
   }, [volume_control])
 
+  const audios_on_track = () => {
+    return audios.filter(a => a.track_id == track.id).length
+  }
+
   const remove = () => {
-    if (!audios.length) {
+    if (!audios_on_track()) {
       remove_track()
     } else {
       set_sure_delete(true)
@@ -142,15 +146,16 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
               }
             </div>
 
+            <div style={{ ...styles.volume_number, left: volume_control ? 193 : 41 }}>
+              <h2 style={{ color: "var(--theme)", margin: 0 }}>{track.volume}</h2>
+            </div>
+
             {!track.main && <div style={styles.track_delete} onPointerDown={remove}><Close /></div>}
 
 
 
           </>
         }
-        <div style={{ ...styles.volume_number, left: volume_control ? 193 : 41 }}>
-          <h2 style={{ color: "var(--theme)", margin: 0 }}>{track.volume}</h2>
-        </div>
       </div>
     </div>
     <div data-track="track" data-id={track.id} style={styles.track_line}>

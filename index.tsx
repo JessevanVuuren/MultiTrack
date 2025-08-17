@@ -1,10 +1,10 @@
 /* @jsxImportSource preact */
-import { Tab, Pane, usePlayerState, PluginTabProps, makeEditorPlugin, Tune, useApplication } from '@motion-canvas/ui'
+import { Tab, Pane, usePlayerState, PluginTabProps, makeEditorPlugin, Tune, useApplication, useKeyHold } from '@motion-canvas/ui'
 import { Audio, AudioHierarchyProps, MultiTrackProps, RecordProps, Track } from './core/types'
 import { add_track, build_buffer, copy_audio, load_audio, pause_play } from './core/wave'
 import { element_contains_pointer, value_to_percent, throttle } from "./core/utils"
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
-import { load_saved_state, save_state } from './core/local'
+import { load_saved_state, save_audio_buffer, save_state } from './core/local'
 import { createPortal } from 'preact/compat'
 import { createElement } from 'preact'
 
@@ -12,7 +12,6 @@ import { AudioHierarchyComp } from './comp/AudioHierarchy'
 import { TrackListComp } from './comp/TrackList'
 import { RecordComp } from './comp/RecordButton'
 
-// const audio_ctx = useRef<AudioContext>(new AudioContext())
 const audio_ctx = new AudioContext()
 
 const MultiTrackTab = ({ tab }: PluginTabProps) => {
@@ -48,7 +47,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
 
     (async () => {
       const files = await (await fetch("/audios")).json() as string[]
-  
+
       let state = files.find(f => f.includes("multi-track.json"))
 
       const loaded_audio: Audio[] = []
@@ -106,6 +105,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
       return e.className.includes("_sceneTrack") || e.className.includes("_labelTrack")
     })
 
+
     scene_track_element.forEach(child => holder.appendChild(child));
     timeline_element.appendChild(holder);
 
@@ -137,12 +137,27 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
       build_buffer(audio_ctx, audio_buffer, audios, tracks, duration_time)
       save_state(audios, tracks)
     }, 500);
-    
+
     throttled_call(on_scroll)
-    
-    app.player.togglePlayback(false)
+
+    const recording = audios.some(a => a.recoding)
+    if (!recording) {
+      app.player.togglePlayback(false)
+    }
+
     return () => clearTimeout(timeOutId)
-  }, [audios, tracks])
+  }, [audios, tracks]) // rebuild audio buffer
+
+  useEffect(() => {
+    document.addEventListener("multi-track:prepare", () => build_output_audio());
+
+    const build_output_audio = async () => {
+      console.log("start output")
+      await save_audio_buffer(audio_buffer.current, "multi-track-audio")
+      document.dispatchEvent(new CustomEvent("multi-track:finalize"));
+    }
+
+  }, []) // build audio file for export ffmpeg render
 
   const pointer_up = () => {
     selected.current = ""
@@ -162,6 +177,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
 
     const props = { audios, tracks, set_tracks, set_audios, scroll } as MultiTrackProps
     const element = createElement(TrackListComp, props)
+    placeholder.current.children[1].setAttribute("style", "display:flex;flex-direction:column")
 
     return createPortal(element, placeholder.current.children[1])
   }
@@ -193,8 +209,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
         const html_el = el as HTMLElement
         if (html_el.dataset.audio === "audio") {
           selected.current = html_el.dataset.id
-          mouse_offset.current =  e.clientX - rect.left
-          console.log(html_el.dataset.id)
+          mouse_offset.current = e.clientX - rect.left
         }
       }
     })

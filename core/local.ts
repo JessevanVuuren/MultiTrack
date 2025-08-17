@@ -35,14 +35,14 @@ const buffer_to_str = (wavData: ArrayBuffer) => {
   return str
 }
 
-export const save_audio = async (audio: Audio, name: string) => {
+export const save_audio_buffer = async (buffer: AudioBuffer, name: string) => {
 
   const channelBuffers = [];
-  for (let channel = 0; channel < audio.buffer.numberOfChannels; channel++) {
-    channelBuffers.push(audio.buffer.getChannelData(channel));
+  for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+    channelBuffers.push(buffer.getChannelData(channel));
   }
 
-  const wav_data = audioBufferToWav(audio.buffer.sampleRate, channelBuffers);
+  const wav_data = audioBufferToWav(buffer.sampleRate, channelBuffers);
   const string_buffer = buffer_to_str(wav_data)
   const base64 = btoa(string_buffer)
 

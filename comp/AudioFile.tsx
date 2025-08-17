@@ -1,10 +1,10 @@
 /* @jsxImportSource preact */
 import { Button, Separator } from '@motion-canvas/ui'
 import { useEffect, useState } from 'preact/hooks'
+import { save_audio_buffer } from '../core/local'
 import { format_duration } from "../core/utils"
 import { AudioFileProps } from '../core/types'
 import { audio_polyline } from '../core/wave'
-import { save_audio } from '../core/local'
 import { styles } from '../style/styles'
 
 
@@ -16,7 +16,11 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, aud
   const update_state = async () => {
     set_audios(prev => prev.map(a => {
       if (a.id == audio.id) {
+        if (audio.track_id == "") {
+          audio.track_id = "default"
+        }
         a.active = !audio.active
+
       }
       return a
     }))
@@ -50,7 +54,7 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, aud
     }
 
     audio.name = name
-    save_audio(audio, name)
+    save_audio_buffer(audio.buffer, name)
 
     set_audios(prev => prev.map(a => {
       if (a.id == audio.id) {

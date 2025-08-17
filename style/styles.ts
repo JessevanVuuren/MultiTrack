@@ -2,7 +2,7 @@ import { StyleSheet } from '../core/types';
 
 export const styles: StyleSheet = {
   audio_timeline_style: {
-    marginTop: 7,
+    marginTop: 40,
   },
   add_audio_style: {
     display: "flex",
