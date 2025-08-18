@@ -21,6 +21,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@motion-canvas/2d": "^3.17.2",
     "@motion-canvas/core": "^3.17.2",
     "@motion-canvas/ui": "^3.17.2",
     "@motion-canvas/vite-plugin": "^3.17.2",
