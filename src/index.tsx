@@ -1,4 +1,3 @@
-/* @jsxImportSource preact */
 import { Tab, Pane, usePlayerState, PluginTabProps, makeEditorPlugin, Tune, useApplication } from '@motion-canvas/ui'
 import { Audio, AudioHierarchyProps, MultiTrackProps, RecordProps, Track } from './core/types'
 import { add_track, build_buffer, copy_audio, load_audio, pause_play } from './core/wave'

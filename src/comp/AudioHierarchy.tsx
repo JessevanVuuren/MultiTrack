@@ -1,5 +1,4 @@
-/* @jsxImportSource preact */
-import {  AudioHierarchyProps } from '../core/types'
+import { AudioHierarchyProps } from '../core/types'
 import { AudioFileComp } from './AudioFile'
 
 export const AudioHierarchyComp: React.FC<AudioHierarchyProps> = ({ audios, set_audios }) => {

@@ -1,4 +1,3 @@
-/* @jsxImportSource preact */
 import { MultiTrackProps } from '../core/types'
 import { TrackLineComp } from './TrackLine'
 import { Button } from '@motion-canvas/ui'

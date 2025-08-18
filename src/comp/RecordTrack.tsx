@@ -1,4 +1,3 @@
-/* @jsxImportSource preact */
 import { value_to_percent } from "../core/utils"
 import { usePlayerTime } from '@motion-canvas/ui'
 import { RecordTrackProps } from '../core/types'

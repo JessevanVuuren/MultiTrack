@@ -1,4 +1,3 @@
-/* @jsxImportSource preact */
 import { Button, Separator } from '@motion-canvas/ui'
 import { useEffect, useState } from 'preact/hooks'
 import { save_audio_buffer } from '../core/local'
