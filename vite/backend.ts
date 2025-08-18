@@ -1,6 +1,5 @@
 import { Plugin, PLUGIN_OPTIONS } from '@motion-canvas/vite-plugin';
-
-const fs = require('fs');
+import fs from 'fs';
 
 export default function MultiTrackPlugin(): Plugin {
   return {
