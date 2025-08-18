@@ -13,7 +13,31 @@
   "license": "MIT",
   "author": "JessevanVuuren",
   "type": "module",
-  "main": "index.js",
+  "module": "./dist/vite-plugin.js",
+  "types": "./dist/vite-plugin.d.ts",
+  "files": [
+    "./dist"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "default": "./dist/vite-plugin.js",
+        "types": "./dist/vite-plugin.d.ts"
+      }
+    },
+    "./editor-plugin": {
+      "import": {
+        "default": "./dist/editor-plugin.js",
+        "types": "./dist/editor-plugin.d.ts"
+      }
+    },
+    "./exporter": {
+      "import": {
+        "default": "./dist/exporter.js",
+        "types": "./dist/exporter.d.ts"
+      }
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -25,7 +49,7 @@
     "@motion-canvas/core": "^3.17.2",
     "@motion-canvas/ui": "^3.17.2",
     "@motion-canvas/vite-plugin": "^3.17.2",
-    "preact": "^10.27.0"
+    "preact": "^10.19.2"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
