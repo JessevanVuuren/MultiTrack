@@ -1,0 +1,29 @@
+{
+  "name": "multitrack",
+  "version": "0.0.1",
+  "description": "A plug and play audio plugin for Motion Canvas",
+  "homepage": "https://github.com/JessevanVuuren/MultiTrack#readme",
+  "bugs": {
+    "url": "https://github.com/JessevanVuuren/MultiTrack/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JessevanVuuren/MultiTrack.git"
+  },
+  "license": "MIT",
+  "author": "JessevanVuuren",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@motion-canvas/core": "^3.17.2",
+    "@motion-canvas/ui": "^3.17.2",
+    "@motion-canvas/vite-plugin": "^3.17.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
+  }
+}
