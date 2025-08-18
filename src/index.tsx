@@ -279,8 +279,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
 
 const IndexAudioHierarchy = () => <Pane title="MultiTrack" id="multi-track-pane"><p></p></Pane>
 
-
-export default makeEditorPlugin({
+const MultiTrack = makeEditorPlugin({
   tabs: [{
     name: "MultiTrack",
     tabComponent: MultiTrackTab,
@@ -289,3 +288,4 @@ export default makeEditorPlugin({
   name: 'timeline-overlay',
 });
 
+export default MultiTrack;
