@@ -18,7 +18,7 @@ export default defineConfig({
         'editor-plugin': resolve(__dirname, './src/index.tsx'),
         'vite-plugin': resolve(__dirname, './src/vite/backend.ts'),
       },
-      formats: ['es'],
+      formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: [

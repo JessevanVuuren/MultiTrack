@@ -20,18 +20,21 @@
   ],
   "exports": {
     ".": {
+      "require": "./dist/vite-plugin.cjs",
       "import": {
         "default": "./dist/vite-plugin.js",
         "types": "./dist/vite-plugin.d.ts"
       }
     },
     "./editor-plugin": {
+      "require": "./dist/editor-plugin.cjs",
       "import": {
         "default": "./dist/editor-plugin.js",
         "types": "./dist/editor-plugin.d.ts"
       }
     },
     "./exporter": {
+      "require": "./dist/exporter.cjs",
       "import": {
         "default": "./dist/exporter.js",
         "types": "./dist/exporter.d.ts"
