@@ -23,11 +23,13 @@
   "dependencies": {
     "@motion-canvas/core": "^3.17.2",
     "@motion-canvas/ui": "^3.17.2",
-    "@motion-canvas/vite-plugin": "^3.17.2"
+    "@motion-canvas/vite-plugin": "^3.17.2",
+    "preact": "^10.27.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
-    "typescript": "^5.9.2",
-    "vite": "^5.4.19"
+    "typescript": "^5.8.2",
+    "vite": "^5.4.19",
+    "vite-plugin-dts": "^4.5.4"
   }
 }
