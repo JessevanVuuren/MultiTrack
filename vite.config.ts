@@ -22,11 +22,9 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
-        'node:fs/promises',
-        '@motion-canvas/2d',
-        '@motion-canvas/core',
-        '@motion-canvas/vite-plugin',
-        'preact',
+        /node:/,
+        /@motion-canvas/,
+        /preact/,
       ],
     },
   },
