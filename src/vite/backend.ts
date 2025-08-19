@@ -31,9 +31,8 @@ export default function MultiTrackPlugin(): Plugin {
         }
       });
     },
-
     [PLUGIN_OPTIONS]: {
-      entryPoint: '',
+      entryPoint: 'multitrack/exporter',
     },
   };
 }
