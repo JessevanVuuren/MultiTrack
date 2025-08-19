@@ -34,18 +34,17 @@
       }
     },
     "./exporter": {
-      "require": "./dist/exporter.cjs",
       "import": {
-        "default": "./dist/exporter.js",
-        "types": "./dist/exporter.d.ts"
+        "default": "./dist/exporter/index.js",
+        "types": "./dist/exporter/index.d.ts"
       }
     }
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:plugin": "tsc && vite build",
+    "build:exporter": "tsc -p tsconfig.exporter.json",
+    "build": "npm run build:plugin && npm run build:exporter"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

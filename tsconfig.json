@@ -16,10 +16,7 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "paths": {
-      "@*": ["./src/*"]
-    }
+    "lib": ["DOM", "DOM.Iterable", "ESNext"]
   },
   "include": ["src"]
 }
