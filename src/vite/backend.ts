@@ -32,7 +32,7 @@ export default function MultiTrackPlugin(): Plugin {
       });
     },
     [PLUGIN_OPTIONS]: {
-      entryPoint: 'multitrack/exporter',
+      entryPoint: 'motion-canvas-multitrack/exporter',
     },
   };
 }
