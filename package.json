@@ -27,10 +27,9 @@
       }
     },
     "./editor-plugin": {
-      "require": "./dist/editor-plugin.cjs",
       "import": {
-        "default": "./dist/editor-plugin.js",
-        "types": "./dist/editor-plugin.d.ts"
+        "default": "./dist/index.js",
+        "types": "./dist/index.d.ts"
       }
     },
     "./exporter": {
@@ -42,9 +41,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build:plugin": "tsc && vite build",
-    "build:exporter": "tsc -p tsconfig.exporter.json",
-    "build": "npm run build:plugin && npm run build:exporter"
+    "build": "tsc && vite build && tsc -p tsconfig.client.json"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

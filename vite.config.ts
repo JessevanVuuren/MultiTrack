@@ -14,7 +14,6 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        'editor-plugin': resolve(__dirname, './src/index.tsx'),
         'vite-plugin': resolve(__dirname, './src/vite/backend.ts'),
       },
       formats: ['es', 'cjs'],
