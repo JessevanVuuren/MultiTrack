@@ -157,30 +157,32 @@ export const stop = (source: MutableRef<AudioBufferSourceNode>) => {
 }
 
 export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBuffer>, audios: Audio[], tracks: Track[], duration: number) => {
-  buffer.current = ctx.createBuffer(2, ctx.sampleRate * duration, ctx.sampleRate)
+  // Use max channel count across all audios, or fallback to stereo (2)
+  const maxChannels = Math.max(2, ...audios.map(a => a.buffer?.numberOfChannels ?? 0));
+
+  buffer.current = ctx.createBuffer(maxChannels, ctx.sampleRate * duration, ctx.sampleRate);
 
   audios.forEach(audio => {
-    if (!audio.active || audio.recoding) return
+    if (!audio.active || audio.recoding) return;
 
-    const track = get_track(audio.track_id, tracks)
-    if (track.muted) return
+    const track = get_track(audio.track_id, tracks);
+    if (track.muted) return;
 
-    const left_source = audio.buffer.getChannelData(0)
-    const right_source = audio.buffer.getChannelData(1)
+    const offset = Math.round(audio.offset * ctx.sampleRate);
+    const available_space = buffer.current.length - offset;
+    const len = Math.min(available_space, audio.buffer.length);
 
-    const left_destination = buffer.current.getChannelData(0)
-    const right_destination = buffer.current.getChannelData(1)
+    // Mix per channel dynamically
+    for (let ch = 0; ch < audio.buffer.numberOfChannels; ch++) {
+      const source = audio.buffer.getChannelData(ch);
+      const destination = buffer.current.getChannelData(ch);
 
-    const offset = Math.round(audio.offset * ctx.sampleRate)
-    const available_space = buffer.current.length - offset
-    const len = Math.min(available_space, audio.buffer.length)
-
-    for (let i = 0; i < len; i++) {
-      left_destination[i + offset] += left_source[i] * (track.volume / 100)
-      right_destination[i + offset] += right_source[i] * (track.volume / 100)
+      for (let i = 0; i < len; i++) {
+        destination[i + offset] += source[i] * (track.volume / 100);
+      }
     }
-  })
-}
+  });
+};
 
 const get_track = (track_id: string, tracks: Track[]): Track => {
   return tracks.find(t => t.id == track_id)
