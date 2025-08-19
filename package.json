@@ -47,17 +47,16 @@
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "@motion-canvas/2d": "^3.17.2",
-    "@motion-canvas/core": "^3.17.2",
-    "@motion-canvas/ui": "^3.17.2",
-    "@motion-canvas/vite-plugin": "^3.17.2",
-    "preact": "^10.19.2"
-  },
   "devDependencies": {
     "@types/node": "^24.3.0",
     "typescript": "^5.8.2",
     "vite": "^5.4.19",
     "vite-plugin-dts": "^4.5.4"
+  },
+  "peerDependencies": {
+    "@motion-canvas/2d": "^3.17.2",
+    "@motion-canvas/core": "^3.17.2",
+    "@motion-canvas/ui": "^3.17.2",
+    "@motion-canvas/vite-plugin": "^3.17.2"
   }
 }
