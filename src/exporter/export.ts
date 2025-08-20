@@ -13,7 +13,7 @@ type FFmpegExporterOptions = ValueOf<
 >;
 
 export class MultiExport implements Exporter {
-  public static readonly id = '@motion-canvas/ffmpeg';
+  public static readonly id = 'multitrack';
   public static readonly displayName = 'MultiTrack';
 
   public static meta(project: Project): MetaField<any> {
@@ -100,7 +100,7 @@ export class MultiExport implements Exporter {
         import.meta.hot!.send('motion-canvas/ffmpeg', { method, data });
       });
     } else {
-      throw new Error('FFmpegExporter can only be used locally.');
+      throw new Error('MultiExport can only be used locally.');
     }
   }
 }

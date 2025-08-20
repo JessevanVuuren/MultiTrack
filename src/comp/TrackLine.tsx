@@ -1,4 +1,3 @@
-/* @jsxImportSource preact */
 import { Button, Close, VolumeOff, VolumeOn } from '@motion-canvas/ui'
 import { clamp, element_contains_pointer, map } from '../core/utils'
 import { useEffect, useRef, useState } from 'preact/hooks'

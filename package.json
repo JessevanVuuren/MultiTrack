@@ -1,0 +1,58 @@
+{
+  "name": "motion-canvas-multitrack",
+  "version": "0.0.1",
+  "description": "A plug and play audio plugin for Motion Canvas",
+  "homepage": "https://github.com/JessevanVuuren/MultiTrack#readme",
+  "bugs": {
+    "url": "https://github.com/JessevanVuuren/MultiTrack/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JessevanVuuren/MultiTrack.git"
+  },
+  "license": "MIT",
+  "author": "JessevanVuuren",
+  "type": "module",
+  "module": "./dist/vite-plugin.js",
+  "types": "./dist/vite-plugin.d.ts",
+  "files": [
+    "./dist"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/vite-plugin.cjs",
+      "import": {
+        "default": "./dist/vite-plugin.js",
+        "types": "./dist/vite-plugin.d.ts"
+      }
+    },
+    "./editor-plugin": {
+      "import": {
+        "default": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
+    "./exporter": {
+      "import": {
+        "default": "./dist/exporter/index.js",
+        "types": "./dist/exporter/index.d.ts"
+      }
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && tsc -p tsconfig.client.json"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.8.2",
+    "vite": "^5.4.19",
+    "vite-plugin-dts": "^4.5.4"
+  },
+  "peerDependencies": {
+    "@motion-canvas/2d": "^3.17.2",
+    "@motion-canvas/core": "^3.17.2",
+    "@motion-canvas/ui": "^3.17.2",
+    "@motion-canvas/vite-plugin": "^3.17.2"
+  }
+}

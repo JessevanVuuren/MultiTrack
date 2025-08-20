@@ -1,4 +1,3 @@
-/* @jsxImportSource preact */
 import { useEffect, useMemo, useRef } from 'preact/hooks'
 import { value_to_percent, map } from "../core/utils"
 import { usePlayerTime } from '@motion-canvas/ui'

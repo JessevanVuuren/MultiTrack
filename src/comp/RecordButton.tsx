@@ -1,4 +1,3 @@
-/* @jsxImportSource preact */
 import { blob_to_AudioBuffer, uid, unlink_audio } from "../core/wave"
 import { useApplication, usePlayerTime } from "@motion-canvas/ui"
 import { useEffect, useRef, useState } from "preact/hooks"
