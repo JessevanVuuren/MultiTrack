@@ -34,23 +34,22 @@ Not much to say, just easy drag and drop.
 
 # Installation
 
-Installing the MultiTrack plugin into your project is easy and requires no extra dependencies.
+Installing the MultiTrack plugin into your project is easy and requires only a few changes.
 
-Start by opening an existing MotionCanvas project or create a new one:
+Start by opening an existing [MotionCanvas](https://motioncanvas.io/docs/quickstart) project or create a new one:
 ```bash
 npm init @motion-canvas@latest
 ```
 
-Clone this repo in the root of the project:
+Next install the npm package [motion-canvas-multitrack](https://www.npmjs.com/package/motion-canvas-multitrack)
 ```bash
-git clone https://github.com/JessevanVuuren/MultiTrack.git
+npm i motion-canvas-multitrack
 ```
 
-This should result in a structure like the following. Next, create an empty `audio` folder where audio files will be stored and created:
+After successfully installing the plugin, create an empty `audio` folder where audio files will be stored and created:
 ```
   project/
 * ├── audio/
-* ├── MultiTrack/
   ├── node_modules/
   ├── public/
   ├── src/
@@ -61,19 +60,16 @@ This should result in a structure like the following. Next, create an empty `aud
   └── vite.config.ts
 ```
 
-Next, go to the `src/project.ts` file and import `MultiTrack()` and `MultiExport()`. Note that `experimentalFeatures` is added and set to `true`
- -  `MultiTrack()` is responsible for displaying the user interface
- -  `MultiExport()` adds an extra render output named `MultiTrack`, which can be found in the video settings tab under rendering.
+Next, go to the `src/project.ts` file and import `MultiTrack()` from `motion-canvas-multitrack/editor-plugin`. Note that `experimentalFeatures` is added and set to `true`
 
 ```ts
 import { makeProject } from '@motion-canvas/core'
 import example from './scenes/example?scene'
 
-import MultiExport from "../MultiTrack/exporter"
-import MultiTrack from "../MultiTrack"
+import MultiTrack from 'motion-canvas-multitrack/editor-plugin';
 
 export default makeProject({
-  plugins: [MultiTrack(), MultiExport()],
+  plugins: [MultiTrack()],
   experimentalFeatures: true,
   scenes: [example],
 });
@@ -83,15 +79,16 @@ For the final step, open the config file `vite.config.ts` and add `MultiTrackPlu
 
 ```ts
 import MultiTrackPlugin from './MultiTrack/vite/backend'
-import motionCanvas from '@motion-canvas/vite-plugin'
 import ffmpeg from '@motion-canvas/ffmpeg'
 import { defineConfig } from 'vite'
 
+import MultiTrackPlugin from 'motion-canvas-multitrack';
+
 export default defineConfig({
   plugins: [
+    MultiTrackPlugin(),
     motionCanvas(),
     ffmpeg(),
-    MultiTrackPlugin()
   ],
   server: {
     watch: {
@@ -112,7 +109,11 @@ To render with the audio from MultiTrack, go to the `video settings` tab and sel
 Always welcome :)
 
 
+# Contributors
 
+[<img src="https://github.com/sglkc.png" width="60px;"/>](https://github.com/sglkc/MultiTrack) | 
+:-:|
+[sglk](https://github.com/sglkc/MultiTrack)|
 
 
 
