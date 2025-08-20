@@ -18,6 +18,13 @@
   "files": [
     "./dist"
   ],
+  "keywords": [
+    "motion-canvas",
+    "multitrack",
+    "audio-editing",
+    "animation",
+    "audios"
+  ],
   "exports": {
     ".": {
       "require": "./dist/vite-plugin.cjs",
