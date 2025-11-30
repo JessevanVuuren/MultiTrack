@@ -1,20 +1,15 @@
-import { array_min_max, map } from "./utils"
+import { array_min_max, map, uid } from "./utils"
 import { MutableRef } from "preact/hooks"
 import { Audio, Track } from "./types"
-
-export const uid = () => {
-  return "id" + Math.random().toString(16).slice(2)
-}
 
 export const copy_audio = (s: Audio, d: Audio) => {
   d.id = s.id
   d.name = s.name
   d.source = s.source
 
-  d.active = s.active
-  d.offset = s.offset
   d.duration = s.duration
-  d.track_id = s.track_id
+
+  s.positions.map(position => d.positions.push(position))
 
   d.buffer = s.buffer
   d.buffer_line = s.buffer_line
@@ -27,10 +22,8 @@ export const unlink_audio = (s: Audio): Audio => {
     id: s.id,
     name: s.name,
     source: s.source,
-    active: s.active,
-    offset: s.offset,
     duration: s.duration,
-    track_id: s.track_id,
+    positions: s.positions.filter(position => true),
     buffer: s.buffer,
     buffer_line: s.buffer_line,
     recoding: s.recoding,
@@ -60,10 +53,7 @@ export const build_audio = (name: string, buffer: AudioBuffer, path: string, tra
     id: uid(),
     name: name,
     source: path,
-
-    offset: 0,
-    active: active,
-    track_id: track_id,
+    positions: [],
     duration: buffer.duration,
 
     recoding: recoding,
@@ -163,24 +153,27 @@ export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBu
   buffer.current = ctx.createBuffer(maxChannels, ctx.sampleRate * duration, ctx.sampleRate);
 
   audios.forEach(audio => {
-    if (!audio.active || audio.recoding) return;
+    if (audio.recoding) return;
+    
+    audio.positions.map(position => {
 
-    const track = get_track(audio.track_id, tracks);
-    if (track.muted) return;
+      const track = get_track(position.track_id, tracks);
+      if (track.muted) return;
 
-    const offset = Math.round(audio.offset * ctx.sampleRate);
-    const available_space = buffer.current.length - offset;
-    const len = Math.min(available_space, audio.buffer.length);
+      const offset = Math.round(position.offset * ctx.sampleRate);
+      const available_space = buffer.current.length - offset;
+      const len = Math.min(available_space, audio.buffer.length);
 
-    // Mix per channel dynamically
-    for (let ch = 0; ch < audio.buffer.numberOfChannels; ch++) {
-      const source = audio.buffer.getChannelData(ch);
-      const destination = buffer.current.getChannelData(ch);
+      // Mix per channel dynamically
+      for (let ch = 0; ch < audio.buffer.numberOfChannels; ch++) {
+        const source = audio.buffer.getChannelData(ch);
+        const destination = buffer.current.getChannelData(ch);
 
-      for (let i = 0; i < len; i++) {
-        destination[i + offset] += source[i] * (track.volume / 100);
+        for (let i = 0; i < len; i++) {
+          destination[i + offset] += source[i] * (track.volume / 100);
+        }
       }
-    }
+    })
   });
 };
 

@@ -12,7 +12,7 @@ export const TrackListComp: React.FC<MultiTrackProps> = ({ audios, tracks, set_t
 
       {tracks.map(track => {
         return <>
-          <TrackLineComp audios={audios.filter(audio => audio.track_id == track.id)} set_tracks={set_tracks} track={track} scroll={scroll} set_audios={set_audios} />
+          <TrackLineComp audios={audios} set_tracks={set_tracks} track={track} scroll={scroll} set_audios={set_audios} />
           <div style={styles.separator_style} />
         </>
       })}

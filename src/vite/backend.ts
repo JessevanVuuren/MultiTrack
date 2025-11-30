@@ -20,7 +20,7 @@ export default function MultiTrackPlugin(): Plugin {
         }
       });
 
-      // Delete audio file
+      // Delete temp audio file
       server.middlewares.use('/cleanup', async (_, res) => {
         try {
           await fs.stat(audioFile); // check existence

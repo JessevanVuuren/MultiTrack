@@ -4,14 +4,18 @@ import { add_track, build_buffer, copy_audio, load_audio, pause_play } from './c
 import { element_contains_pointer, value_to_percent, throttle } from "./core/utils"
 import { load_saved_state, save_audio_buffer, save_state } from './core/local'
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
+import { check_version } from "./utils/utils"
 import { createPortal } from 'preact/compat'
 import { createElement } from 'preact'
+
 
 import { AudioHierarchyComp } from './comp/AudioHierarchy'
 import { TrackListComp } from './comp/TrackList'
 import { RecordComp } from './comp/RecordButton'
 
 const audio_ctx = new AudioContext()
+
+import pkg from '../package.json' assert { type: 'json' };
 
 const MultiTrackTab = ({ tab }: PluginTabProps) => {
 
@@ -45,6 +49,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
   useEffect(() => {
 
     (async () => {
+
       const files = await (await fetch("/audios")).json() as string[]
 
       let state = files.find(f => f.includes("multi-track.json"))
@@ -61,6 +66,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
 
       if (state) {
         const config = await load_saved_state("./audio/" + state)
+        check_version(config.version, pkg.version);
 
         if (config) {
           loaded_track.push(...config.tracks)
@@ -71,8 +77,6 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
             if (audio_state) {
               audio_state.buffer = audio.buffer
               copy_audio(audio_state, audio)
-            } else {
-              audio.track_id = loaded_track[0].id
             }
           })
         }
@@ -134,7 +138,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
       console.log("save to disk and rebuild")
       const duration_time = app.player.playback.duration / app.player.playback.fps
       build_buffer(audio_ctx, audio_buffer, audios, tracks, duration_time)
-      save_state(audios, tracks)
+      save_state(audios, tracks, pkg.version)
     }, 500);
 
     throttled_call(on_scroll)
@@ -235,11 +239,13 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
     if (track) {
       const track_id = track.dataset.id
 
-      set_audios(prev => prev.map(e => {
-        if (e.id == selected.current) {
-          e.track_id = track_id
-        }
-        return e
+      set_audios(prev => prev.map(a => {
+        a.positions.map(p => {
+          if (p.id == selected.current) {
+            p.track_id = track_id
+          }
+        })
+        return a
       }))
     }
   }
@@ -250,11 +256,13 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
     const duration_time = app.player.playback.duration / app.player.playback.fps
     const seconds = (duration_time / 100) * percent
 
-    set_audios(prev => prev.map(e => {
-      if (e.id == selected.current) {
-        e.offset = seconds
-      }
-      return e
+    set_audios(prev => prev.map(a => {
+      a.positions.map(p => {
+        if (p.id == selected.current) {
+          p.offset = seconds
+        }
+      })
+      return a
     }))
   }
 

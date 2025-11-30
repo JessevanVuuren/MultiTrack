@@ -1,6 +1,6 @@
 {
   "name": "motion-canvas-multitrack",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A plug and play audio plugin for Motion Canvas",
   "homepage": "https://github.com/JessevanVuuren/MultiTrack#readme",
   "bugs": {
@@ -16,7 +16,7 @@
   "module": "./dist/vite-plugin.js",
   "types": "./dist/vite-plugin.d.ts",
   "files": [
-    "./dist"
+    "dist"
   ],
   "keywords": [
     "motion-canvas",
@@ -35,23 +35,29 @@
     },
     "./editor-plugin": {
       "import": {
-        "default": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "default": "./dist/src/index.js",
+        "types": "./dist/src/index.d.ts"
       }
     },
     "./exporter": {
       "import": {
-        "default": "./dist/exporter/index.js",
-        "types": "./dist/exporter/index.d.ts"
+        "default": "./dist/src/exporter/index.js",
+        "types": "./dist/src/exporter/index.d.ts"
       }
     }
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && tsc -p tsconfig.client.json"
+    "build": "tsc && vite build && tsc -p tsconfig.client.json",
+    "watch": "concurrently \"tsc --watch\" \"tsc -p tsconfig.client.json --watch\" \"npm run watch:yalc\"",
+    "watch:yalc": "nodemon --watch dist --delay 1000ms --exec \"yalc push\"",
+    "yalc:push": "npm run build && yalc push"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.11",
+    "npm-run-all": "^4.1.5",
     "typescript": "^5.8.2",
     "vite": "^5.4.19",
     "vite-plugin-dts": "^4.5.4"

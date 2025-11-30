@@ -1,7 +1,8 @@
-import { blob_to_AudioBuffer, uid, unlink_audio } from "../core/wave"
+import { blob_to_AudioBuffer, unlink_audio } from "../core/wave"
 import { useApplication, usePlayerTime } from "@motion-canvas/ui"
 import { useEffect, useRef, useState } from "preact/hooks"
 import { Audio, RecordProps } from "../core/types"
+import { uid } from "../core/utils"
 
 export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => {
   const analyser = audio_ctx.createAnalyser()
@@ -18,7 +19,7 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
 
   useEffect(() => {
     if (audio_ref.current) {
-      const duration = player_time.time - audio_ref.current.offset
+      const duration = player_time.time - audio_ref.current.positions[0].offset
       audio_ref.current.duration = duration
     }
 
@@ -85,16 +86,16 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
       audio_ref.current = {
         id: uid(),
         source: "",
+        duration: 0,
+        recoding: true,
+        buffer_line: "",
         name: "recording",
 
-        offset: player_time.time,
-        duration: 0,
-        active: true,
-        track_id: "default",
-
-        recoding: true,
-
-        buffer_line: "",
+        positions: [{
+          id: uid(),
+          track_id: "default",
+          offset: player_time.time,
+        }],
       }
       set_audios(prev => [...prev, audio_ref.current])
     }

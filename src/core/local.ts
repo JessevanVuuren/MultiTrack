@@ -1,14 +1,13 @@
 import { Audio, Track, Export, SaveState } from "./types";
 import { audioBufferToWav } from "./wav"
 
-export const save_state = (audios: Audio[], tracks: Track[]) => {
+export const save_state = (audios: Audio[], tracks: Track[], version:string) => {
   const filename = "multi-track"
 
-  const active_audio = audios.filter((audio) => { return audio.active })
   audios.forEach(a => a.buffer_line = "")
-
   const config: SaveState = {
-    audios: active_audio,
+    version: version,
+    audios: audios,
     tracks: tracks
   }
 

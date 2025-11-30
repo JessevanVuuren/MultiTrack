@@ -1,24 +1,25 @@
 import { Button, Separator } from '@motion-canvas/ui'
 import { useEffect, useState } from 'preact/hooks'
 import { save_audio_buffer } from '../core/local'
-import { format_duration } from "../core/utils"
+import { format_duration, uid } from "../core/utils"
 import { AudioFileProps } from '../core/types'
 import { audio_polyline } from '../core/wave'
 import { styles } from '../style/styles'
+
 
 
 export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, audios }) => {
   const [polyline, set_polyline] = useState("")
   const [loading, set_loading] = useState(true)
 
-  const update_state = async () => {
+  const place_audio = async () => {
     set_audios(prev => prev.map(a => {
       if (a.id == audio.id) {
-        if (audio.track_id == "") {
-          audio.track_id = "default"
-        }
-        a.active = !audio.active
-
+        a.positions.push({
+          track_id:"default",
+          id:uid(),
+          offset:0,
+        })
       }
       return a
     }))
@@ -85,20 +86,12 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, aud
             </div>
           }
 
-          {audio.active ?
-            <Button loading={loading} onClick={update_state}>Deactivate</Button> :
-            <Button loading={loading} onClick={update_state}>Activate</Button>
-          }
+          <Button loading={loading} onClick={place_audio}>Place</Button>
+
         </div>
       </div>
       <Separator size={1} />
       <div style={styles.audio_file_container}>
-        <div style={{ width: 10 }}>
-          {audio.active ?
-            <p style={{ ...styles.audio_file_text, color: "#14F06F", fontSize: 14 }}>ACTIVE</p> :
-            <p style={{ ...styles.audio_file_text, color: "#E60158", fontSize: 14 }}>INACTIVE</p>
-          }
-        </div>
         <p style={styles.audio_duration}>{format_duration(audio.buffer.duration)}</p>
       </div>
     </div>

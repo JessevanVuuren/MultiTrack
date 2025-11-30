@@ -8,6 +8,7 @@ import { styles } from '../style/styles'
 
 export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll, set_tracks, set_audios }) => {
   const [knob_offset, set_knob_offset] = useState(map(track.volume, 0, 100, 14, 131))
+  const [audio_count, set_audio_count] = useState<number>(0)
 
   const [volume_control, set_volume_control] = useState(false)
   const [sure_delete, set_sure_delete] = useState(false)
@@ -27,10 +28,31 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
   }, [volume_control])
 
   const audios_on_track = () => {
-    return audios.filter(a => a.track_id == track.id).length
+    let on_track = false
+    audios.map(audio => {
+      audio.positions.map(position => {
+        if (position.track_id == track.id) {
+          on_track = true
+        }
+      })
+    })
+
+    return on_track
+  }
+
+  const count_tracks = (): number => {
+    let count = 0
+    audios.map(a => {
+      a.positions.map(p => {
+        if (p.track_id == track.id)
+          count++
+      })
+    })
+    return count
   }
 
   const remove = () => {
+    set_audio_count(count_tracks())
     if (!audios_on_track()) {
       remove_track()
     } else {
@@ -39,15 +61,11 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
   }
 
   const remove_track = () => {
-    set_audios(prev => prev.map(audio => {
-      if (audio.track_id == track.id) {
-        audio.track_id = ""
-        audio.active = false
-        audio.offset = 0
-      }
-
-      return audio
-    }))
+    set_audios(prev => prev.map(audio => ({
+      ...audio, positions: audio.positions.filter(
+        pos => pos.track_id !== track.id,
+      )
+    })))
 
     set_tracks(prev => prev.filter(t => {
       return t.id !== track.id
@@ -112,9 +130,9 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
     <div style={styles.track_control}>
       <div style={styles.track_audio}>
 
-        {audios.length && sure_delete && !track.main ?
+        {audio_count && sure_delete && !track.main ?
           <div style={styles.sure_remove_track}>
-            <p style={{ margin: 0, fontSize: 17 }}>Delete track with {audios.length} sound{audios.length > 1 && "s"}</p>
+            <p style={{ margin: 0, fontSize: 17 }}>Delete track with {audio_count} sound{audio_count > 1 && "s"}</p>
 
             <div style={{ display: "flex", justifyContent: "space-around" }}>
               <Button onPointerDown={remove_track}>Delete</Button>
@@ -153,13 +171,15 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
     </div>
     <div data-track="track" data-id={track.id} style={styles.track_line}>
       {audios.map(audio => {
-        if (!audio.active) return
-
-        if (audio.recoding) {
-          return <RecordTrackComp audio={audio} />
-        } else {
-          return <AudioTrackComp audio={audio} scroll={scroll} />
-        }
+        return audio.positions.map(position => {
+          if (position.track_id === track.id) {
+            if (audio.recoding) {
+              return <RecordTrackComp audio={audio} />
+            } else {
+              return <AudioTrackComp audio={audio} scroll={scroll} position={position} set_audios={set_audios} />
+            }
+          }
+        })
       })}
     </div>
   </div >

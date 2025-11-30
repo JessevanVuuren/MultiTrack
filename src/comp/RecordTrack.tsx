@@ -9,7 +9,7 @@ export const RecordTrackComp: React.FC<RecordTrackProps> = ({ audio }) => {
   return (<>
     <div style={{
       ...styles.audio_track,
-      marginLeft: value_to_percent(audio.offset, player.durationTime) + "%",
+      marginLeft: value_to_percent(audio.positions[0].offset, player.durationTime) + "%",
       width: value_to_percent(audio.duration, player.durationTime) + "%"
     }}>
 

@@ -1,11 +1,15 @@
-import { useEffect, useMemo, useRef } from 'preact/hooks'
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { value_to_percent, map } from "../core/utils"
-import { usePlayerTime } from '@motion-canvas/ui'
+import { styles } from "../style/AudioTrackStyle"
+import { Close, usePlayerTime } from '@motion-canvas/ui'
 import { build_sound_line } from '../core/wave'
 import { AudioTrackProps } from '../core/types'
-import { styles } from '../style/styles'
+import { Bin, Cut } from '../icon/icons'
+import { Button } from '../dynamics/Button'
 
-export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, scroll }) => {
+export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, scroll, position }) => {
+  const [cut_mode, set_cut_mode] = useState(false)
+
   const line = useMemo(() => {
     if (!audio?.buffer) return []
     const data = audio.buffer.getChannelData(0)
@@ -58,21 +62,32 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, scroll }) => 
     culled_line()
   }, [canvas])
 
-  return (<>
+  const remove = () => {
+    set_audios(prev => prev.map(audio => ({
+      ...audio, positions: audio.positions.filter(
+        pos => pos.id !== position.id)
+    })))
+  }
+
+  return <>
     <div style={styles.canvas_container}>
       <canvas ref={canvas} style={styles.canvas_overlay}></canvas>
     </div>
 
-    <div class={"testing"} ref={element} data-audio="audio" data-id={audio.id} style={{
+    <div class={"testing"} ref={element} data-audio="audio" data-id={position.id} style={{
       ...styles.audio_track,
-      marginLeft: value_to_percent(audio.offset, player.durationTime) + "%",
+      marginLeft: value_to_percent(position.offset, player.durationTime) + "%",
       width: value_to_percent(audio.duration, player.durationTime) + "%"
     }}>
 
-      <div data-audio="audio" data-id={audio.id} style={styles.audio_track_label}>
-        <p data-audio="audio" data-id={audio.id} style={styles.audio_file_text}>{audio.name}</p>
+      <div data-audio="audio" data-id={position.id} style={styles.audio_track_label}>
+        <p data-audio="audio" data-id={position.id} style={styles.audio_file_text}>{audio.name}</p>
+      </div>
+
+      <div style={styles.audio_track_options}>
+        <Button children={<Bin />} onClick={remove} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(230, 1, 88, .4)" }} />
+        <Button children={<Cut />} onClick={() => set_cut_mode(true)} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }} />
       </div>
     </div>
   </>
-  )
 }

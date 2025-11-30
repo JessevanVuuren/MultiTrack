@@ -36,10 +36,7 @@ export const styles: StyleSheet = {
     display: "flex",
     justifyContent: "space-between",
   },
-  audio_file_text: {
-    margin: 0,
-    fontSize: 20
-  },
+
   audio_duration: {
     margin: 0,
     color: "var(--theme)",
@@ -55,20 +52,7 @@ export const styles: StyleSheet = {
   svg_polyline: {
     height: "100%", width: "100%"
   },
-  audio_track_label: {
-    zIndex: 10,
-    position: "absolute",
-    backgroundColor: "rgba(0, 0, 0, 0.27)",
-    padding: 5,
-    borderBottomRightRadius: 5
-  },
-  audio_track: {
-    background: "rgba(255,255,255,.1)",
-    borderRadius: 7,
-    borderTopLeftRadius: 0,
-    height: 80,
-    position: "absolute"
-  },
+
   track_control: {
     position: "absolute",
     right: -40,
@@ -82,18 +66,6 @@ export const styles: StyleSheet = {
   track_delete: {
     padding: 4,
     display: "flex"
-  },
-  canvas_overlay: {
-    width: "100%",
-    height: "100%",
-    position: "absolute"
-  },
-  canvas_container: {
-    zIndex: 0,
-    position: "fixed",
-    left: "0%",
-    width: "100%",
-    height: 80
   },
   sure_remove_track: {
     padding: 10,

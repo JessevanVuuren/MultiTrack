@@ -44,3 +44,7 @@ export const array_min_max = (arr: number[]) => {
 export const format_duration = (seconds: number) => {
   return new Date(seconds * 1000).toISOString().substring(14, 19)
 }
+
+export const uid = () => {
+  return "id" + Math.random().toString(16).slice(2)
+}

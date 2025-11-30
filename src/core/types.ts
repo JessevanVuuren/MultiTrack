@@ -4,16 +4,19 @@ export interface Audio {
     id: string
     name: string
     source: string
-
-    offset: number
-    active: boolean
     duration: number
-    track_id: string
-
     recoding: boolean
+
+    positions: TrackPositions[]
 
     buffer?: AudioBuffer
     buffer_line: string
+}
+
+export interface TrackPositions {
+    track_id: string
+    offset: number
+    id: string
 }
 
 export interface Export {
@@ -25,6 +28,7 @@ export interface Export {
 }
 
 export interface SaveState {
+    version: string
     audios: Audio[]
     tracks: Track[]
 }
@@ -65,6 +69,8 @@ export type AudioHierarchyProps = {
 }
 
 export type AudioTrackProps = {
+    set_audios: Dispatch<StateUpdater<Audio[]>>
+    position:TrackPositions
     scroll: number
     audio: Audio
 }
