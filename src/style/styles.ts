@@ -63,6 +63,10 @@ export const styles: StyleSheet = {
     display: "flex",
     flexDirection: "column"
   },
+  audio_file_text: {
+    margin: 0,
+    fontSize: 20
+  },
   track_delete: {
     padding: 4,
     display: "flex"

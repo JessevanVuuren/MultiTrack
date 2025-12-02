@@ -14,7 +14,9 @@ export interface Audio {
 }
 
 export interface TrackPositions {
+    duration: number
     track_id: string
+    unsaved: boolean
     offset: number
     id: string
 }
@@ -70,7 +72,7 @@ export type AudioHierarchyProps = {
 
 export type AudioTrackProps = {
     set_audios: Dispatch<StateUpdater<Audio[]>>
-    position:TrackPositions
+    position: TrackPositions
     scroll: number
     audio: Audio
 }

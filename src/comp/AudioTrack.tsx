@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
-import { value_to_percent, map } from "../core/utils"
+import { value_to_percent, map, element_contains_pointer, uid } from "../core/utils"
 import { styles } from "../style/AudioTrackStyle"
-import { Close, usePlayerTime } from '@motion-canvas/ui'
+import { usePlayerTime } from '@motion-canvas/ui'
 import { build_sound_line } from '../core/wave'
 import { AudioTrackProps } from '../core/types'
 import { Bin, Cut } from '../icon/icons'
 import { Button } from '../dynamics/Button'
 
 export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, scroll, position }) => {
-  const [cut_mode, set_cut_mode] = useState(false)
+  const curr_pos_id = useRef<string>();
+  const cut_mode = useRef(false)
+
 
   const line = useMemo(() => {
     if (!audio?.buffer) return []
@@ -62,6 +64,43 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
     culled_line()
   }, [canvas])
 
+  const enter_cut_mode = (e: PointerEvent) => {
+    const cut_button = document.getElementById("cut-button")
+    const rect = cut_button.getBoundingClientRect()
+    if (!cut_mode.current) {
+      if (element_contains_pointer(rect, e)) {
+        curr_pos_id.current = cut_button.dataset.id
+        cut_mode.current = true
+      }
+
+    } else if (curr_pos_id.current == position.id) {
+      cut_mode.current = false
+
+      const track_width = element.current.getBoundingClientRect().width
+      const left_duration = e.offsetX / track_width * audio.duration
+      const right_duration = (1 - e.offsetX / track_width) * audio.duration
+
+
+      set_audios(prev => prev.map(a => {
+        if (a.id == audio.id) {
+          a.positions.push({ id: uid(), offset: position.offset, track_id: position.track_id, duration: left_duration, unsaved: true })
+          a.positions.push({ id: uid(), offset: position.offset + left_duration, track_id: position.track_id, duration: right_duration, unsaved: true })
+        }
+
+        return a
+      }))
+
+      remove()
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("pointerdown", enter_cut_mode)
+    return () => {
+      document.removeEventListener("pointerdown", enter_cut_mode)
+    }
+  }, [])
+
   const remove = () => {
     set_audios(prev => prev.map(audio => ({
       ...audio, positions: audio.positions.filter(
@@ -69,24 +108,34 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
     })))
   }
 
+  const track_action_style = () => {
+    if (position.unsaved) return styles.unsaved_audio
+    if (curr_pos_id.current === position.id) {
+      if (cut_mode.current) return styles.cutting_mode
+    }
+
+    return {}
+  }
+
   return <>
     <div style={styles.canvas_container}>
       <canvas ref={canvas} style={styles.canvas_overlay}></canvas>
     </div>
 
-    <div class={"testing"} ref={element} data-audio="audio" data-id={position.id} style={{
-      ...styles.audio_track,
+    <div class="audio-track-element" ref={element} data-audio="audio" data-id={position.id} style={{
+      ...styles.audio_track, ...track_action_style(),
       marginLeft: value_to_percent(position.offset, player.durationTime) + "%",
-      width: value_to_percent(audio.duration, player.durationTime) + "%"
+      width: value_to_percent(position.duration, player.durationTime) + "%",
+
     }}>
 
       <div data-audio="audio" data-id={position.id} style={styles.audio_track_label}>
         <p data-audio="audio" data-id={position.id} style={styles.audio_file_text}>{audio.name}</p>
       </div>
 
-      <div style={styles.audio_track_options}>
-        <Button children={<Bin />} onClick={remove} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(230, 1, 88, .4)" }} />
-        <Button children={<Cut />} onClick={() => set_cut_mode(true)} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }} />
+      <div data-audio="audio" data-id={position.id} style={{ ...styles.audio_track_options, zIndex: 11 }}>
+        <Button children={<Bin />} onPointerDown={remove} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(230, 1, 88, .4)" }} />
+        <div id="cut-button" data-id={position.id}><Button children={<Cut />} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }} /></div>
       </div>
     </div>
   </>

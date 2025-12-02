@@ -19,6 +19,24 @@ export const styles: StyleSheet = {
     margin: 0,
     fontSize: 20
   },
+  cutting_mode: {
+    outlineWidth: "2px",
+    outline: "solid var(--theme)",
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
+    boxShadow: "rgba(51, 166, 255, .2) 0px 0px 33px 1px inset"
+  },
+  unsaved_audio: {
+    outlineWidth: "2px",
+    outline: "solid #FF5F15",
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
+    boxShadow: "rgba(255, 95, 21, .2) 0px 0px 33px 1px inset"
+  },
   audio_options_text: {
     margin: 0,
     padding: 2

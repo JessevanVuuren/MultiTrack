@@ -16,9 +16,11 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, aud
     set_audios(prev => prev.map(a => {
       if (a.id == audio.id) {
         a.positions.push({
-          track_id:"default",
-          id:uid(),
-          offset:0,
+          track_id: "default",
+          id: uid(),
+          offset: 0,
+          unsaved: false,
+          duration: audio.duration
         })
       }
       return a

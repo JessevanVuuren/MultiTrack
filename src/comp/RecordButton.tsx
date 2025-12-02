@@ -95,6 +95,8 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
           id: uid(),
           track_id: "default",
           offset: player_time.time,
+          unsaved: true,
+          duration: 0
         }],
       }
       set_audios(prev => [...prev, audio_ref.current])

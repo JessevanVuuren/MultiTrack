@@ -203,7 +203,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
   }
 
   const pointer_down = (e: PointerEvent) => {
-    const elements = document.getElementsByClassName("testing")
+    const elements = document.getElementsByClassName("audio-track-element")
     Array.from(elements).forEach(el => {
       const rect = el.getBoundingClientRect()
 
