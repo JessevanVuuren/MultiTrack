@@ -154,7 +154,7 @@ export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBu
 
   audios.forEach(audio => {
     if (audio.recoding) return;
-    
+
     audio.positions.map(position => {
 
       const track = get_track(position.track_id, tracks);
@@ -194,4 +194,37 @@ export const blob_to_AudioBuffer = async (ctx: AudioContext, blob_part: BlobPart
   return stereo
 }
 
+const splice_audio_buffer = (ctx: AudioContext, source: AudioBuffer, start: number, end: number): AudioBuffer => {
+  const samples = source.sampleRate;
 
+  const start_sample = Math.floor(start * samples)
+  const end_sample = Math.floor(end * samples)
+  const sample_count = end_sample - start_sample
+
+  const buffer = ctx.createBuffer(source.numberOfChannels, sample_count, samples);
+
+  for (let c = 0; c < source.numberOfChannels; c++) {
+    const destination_data = buffer.getChannelData(c)
+    const source_data = source.getChannelData(c)
+
+    for (let i = 0; i < sample_count; i++) {
+      destination_data[i] = source_data[start_sample + i]
+    }
+  }
+
+  return buffer;
+}
+
+export const rerender_unsaved_positions = (ctx: AudioContext, audios: Audio[]) => {
+  audios.map(audio => {
+    audio.positions.map(position => {
+      if (position.unsaved) {
+        const buffer = audio.buffer
+        const start = position.offset
+        const end = position.offset + position.duration
+
+        position.buffer = splice_audio_buffer(ctx, buffer, start, end)
+      }
+    })
+  })
+}

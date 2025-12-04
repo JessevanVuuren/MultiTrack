@@ -1,6 +1,6 @@
 import { Tab, Pane, usePlayerState, PluginTabProps, makeEditorPlugin, Tune, useApplication } from '@motion-canvas/ui'
 import { Audio, AudioHierarchyProps, MultiTrackProps, RecordProps, Track } from './core/types'
-import { add_track, build_buffer, copy_audio, load_audio, pause_play } from './core/wave'
+import { add_track, build_buffer, copy_audio, load_audio, pause_play, rerender_unsaved_positions } from './core/wave'
 import { element_contains_pointer, value_to_percent, throttle } from "./core/utils"
 import { load_saved_state, save_audio_buffer, save_state } from './core/local'
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
@@ -87,7 +87,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
       }
 
       console.log("all audio loaded")
-
+      rerender_unsaved_positions(audio_ctx, loaded_audio)
       set_audios(loaded_audio)
       set_tracks(loaded_track)
       set_loading(false)
@@ -137,6 +137,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
       if (loading) return
       console.log("save to disk and rebuild")
       const duration_time = app.player.playback.duration / app.player.playback.fps
+      rerender_unsaved_positions(audio_ctx, audios)
       build_buffer(audio_ctx, audio_buffer, audios, tracks, duration_time)
       save_state(audios, tracks, pkg.version)
     }, 500);

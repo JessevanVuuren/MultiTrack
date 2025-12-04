@@ -19,6 +19,8 @@ export interface TrackPositions {
     unsaved: boolean
     offset: number
     id: string
+
+    buffer?: AudioBuffer
 }
 
 export interface Export {
