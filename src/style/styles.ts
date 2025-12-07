@@ -13,36 +13,6 @@ export const styles: StyleSheet = {
     height: 2,
     background: "rgba(0, 0, 0, 0.1)",
   },
-  audio_file: {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    borderRadius: 5,
-    position: "relative",
-    width: "100%",
-    marginBottom: 10,
-    overflow: "hidden",
-  },
-  svg_polyline_file: {
-    height: "200%",
-    width: "100%",
-    top: "1%",
-    position: "absolute",
-  },
-  audio_file_padding: {
-    position: "relative",
-    zIndex: 1,
-    padding: 10
-  },
-  audio_file_container: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-
-  audio_duration: {
-    margin: 0,
-    color: "var(--theme)",
-    fontSize: 15,
-    marginTop: 5
-  },
   track_line: {
     background: "rgba(255, 255, 255, 0.1)",
     width: "100%",
@@ -62,10 +32,6 @@ export const styles: StyleSheet = {
     background: "rgba(255,255,255,.1)",
     display: "flex",
     flexDirection: "column"
-  },
-  audio_file_text: {
-    margin: 0,
-    fontSize: 20
   },
   track_delete: {
     padding: 4,

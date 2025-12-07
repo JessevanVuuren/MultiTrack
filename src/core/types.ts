@@ -16,11 +16,16 @@ export interface Audio {
 export interface TrackPositions {
     duration: number
     track_id: string
-    unsaved: boolean
     offset: number
     id: string
 
+    track_cut?: TrackCut
+}
+
+export interface TrackCut {
     buffer?: AudioBuffer
+    start: number
+    end: number
 }
 
 export interface Export {
@@ -51,6 +56,7 @@ export interface StyleSheet {
 export type MultiTrackProps = {
     set_tracks: Dispatch<StateUpdater<Track[]>>
     set_audios: Dispatch<StateUpdater<Audio[]>>
+    audio_ctx: AudioContext
     audios: Audio[]
     tracks: Track[]
     scroll: number
@@ -75,6 +81,8 @@ export type AudioHierarchyProps = {
 export type AudioTrackProps = {
     set_audios: Dispatch<StateUpdater<Audio[]>>
     position: TrackPositions
+    audio_ctx: AudioContext
+    audios: Audio[]
     scroll: number
     audio: Audio
 }
@@ -86,7 +94,8 @@ export type RecordTrackProps = {
 export type TrackLineProps = {
     set_tracks: Dispatch<StateUpdater<Track[]>>
     set_audios: Dispatch<StateUpdater<Audio[]>>
+    audio_ctx: AudioContext
     audios: Audio[]
-    track: Track
     scroll: number
+    track: Track
 }

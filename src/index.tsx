@@ -1,6 +1,6 @@
 import { Tab, Pane, usePlayerState, PluginTabProps, makeEditorPlugin, Tune, useApplication } from '@motion-canvas/ui'
-import { Audio, AudioHierarchyProps, MultiTrackProps, RecordProps, Track } from './core/types'
 import { add_track, build_buffer, copy_audio, load_audio, pause_play, rerender_unsaved_positions } from './core/wave'
+import { Audio, AudioHierarchyProps, MultiTrackProps, RecordProps, Track } from './core/types'
 import { element_contains_pointer, value_to_percent, throttle } from "./core/utils"
 import { load_saved_state, save_audio_buffer, save_state } from './core/local'
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
@@ -178,7 +178,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
   const place_multi_track = () => {
     if (!placeholder.current) return
 
-    const props = { audios, tracks, set_tracks, set_audios, scroll } as MultiTrackProps
+    const props = { audios, tracks, set_tracks, set_audios, scroll, audio_ctx:audio_ctx } as MultiTrackProps
     const element = createElement(TrackListComp, props)
     placeholder.current.children[1].setAttribute("style", "display:flex;flex-direction:column")
 

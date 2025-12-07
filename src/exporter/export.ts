@@ -78,7 +78,7 @@ export class MultiExport implements Exporter {
         const handle = (response: ServerResponse) => {
 
           if (response.method == "end") {
-            fetch("cleanup") // remove file "/audio/multi-track-audio.wav"
+            fetch(`/remove?name=multi-track-audio`)
           }
 
           if (response.method !== method) {

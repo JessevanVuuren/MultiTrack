@@ -147,9 +147,7 @@ export const stop = (source: MutableRef<AudioBufferSourceNode>) => {
 }
 
 export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBuffer>, audios: Audio[], tracks: Track[], duration: number) => {
-  // Use max channel count across all audios, or fallback to stereo (2)
   const maxChannels = Math.max(2, ...audios.map(a => a.buffer?.numberOfChannels ?? 0));
-
   buffer.current = ctx.createBuffer(maxChannels, ctx.sampleRate * duration, ctx.sampleRate);
 
   audios.forEach(audio => {
@@ -160,13 +158,14 @@ export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBu
       const track = get_track(position.track_id, tracks);
       if (track.muted) return;
 
+      const audio_buffer = position.track_cut ? position.track_cut.buffer : audio.buffer;
+      
       const offset = Math.round(position.offset * ctx.sampleRate);
       const available_space = buffer.current.length - offset;
-      const len = Math.min(available_space, audio.buffer.length);
-
-      // Mix per channel dynamically
-      for (let ch = 0; ch < audio.buffer.numberOfChannels; ch++) {
-        const source = audio.buffer.getChannelData(ch);
+      const len = Math.min(available_space, audio_buffer.length);
+      
+      for (let ch = 0; ch < maxChannels; ch++) {
+        const source = audio_buffer.getChannelData(ch);
         const destination = buffer.current.getChannelData(ch);
 
         for (let i = 0; i < len; i++) {
@@ -218,12 +217,12 @@ const splice_audio_buffer = (ctx: AudioContext, source: AudioBuffer, start: numb
 export const rerender_unsaved_positions = (ctx: AudioContext, audios: Audio[]) => {
   audios.map(audio => {
     audio.positions.map(position => {
-      if (position.unsaved) {
+      if (position.track_cut) {
         const buffer = audio.buffer
-        const start = position.offset
-        const end = position.offset + position.duration
+        const start = position.track_cut.start
+        const end = position.track_cut.end
 
-        position.buffer = splice_audio_buffer(ctx, buffer, start, end)
+        position.track_cut.buffer = splice_audio_buffer(ctx, buffer, start, end)
       }
     })
   })

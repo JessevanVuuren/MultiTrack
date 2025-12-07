@@ -42,7 +42,7 @@ export const array_min_max = (arr: number[]) => {
 }
 
 export const format_duration = (seconds: number) => {
-  return new Date(seconds * 1000).toISOString().substring(14, 19)
+  return new Date(seconds * 1000).toISOString().substring(14, 23)
 }
 
 export const uid = () => {

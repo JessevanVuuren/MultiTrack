@@ -4,7 +4,7 @@ import { Button } from '@motion-canvas/ui'
 import { add_track } from '../core/wave'
 import { styles } from '../style/styles'
 
-export const TrackListComp: React.FC<MultiTrackProps> = ({ audios, tracks, set_tracks, set_audios, scroll }) => {
+export const TrackListComp: React.FC<MultiTrackProps> = ({ audios, tracks, set_tracks, set_audios, scroll, audio_ctx }) => {
 
   return (
     <div style={styles.audio_timeline_style} >
@@ -12,7 +12,7 @@ export const TrackListComp: React.FC<MultiTrackProps> = ({ audios, tracks, set_t
 
       {tracks.map(track => {
         return <>
-          <TrackLineComp audios={audios} set_tracks={set_tracks} track={track} scroll={scroll} set_audios={set_audios} />
+          <TrackLineComp audios={audios} set_tracks={set_tracks} track={track} scroll={scroll} set_audios={set_audios} audio_ctx={audio_ctx} />
           <div style={styles.separator_style} />
         </>
       })}

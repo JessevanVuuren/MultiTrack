@@ -6,7 +6,7 @@ import { TrackLineProps } from '../core/types'
 import { AudioTrackComp } from './AudioTrack'
 import { styles } from '../style/styles'
 
-export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll, set_tracks, set_audios }) => {
+export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll, set_tracks, set_audios, audio_ctx }) => {
   const [knob_offset, set_knob_offset] = useState(map(track.volume, 0, 100, 14, 131))
   const [audio_count, set_audio_count] = useState<number>(0)
 
@@ -176,7 +176,7 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
             if (audio.recoding) {
               return <RecordTrackComp audio={audio} />
             } else {
-              return <AudioTrackComp audio={audio} scroll={scroll} position={position} set_audios={set_audios} />
+              return <AudioTrackComp audio={audio} scroll={scroll} position={position} set_audios={set_audios} audio_ctx={audio_ctx} audios={audios} />
             }
           }
         })

@@ -1,11 +1,10 @@
-import { Button, Separator } from '@motion-canvas/ui'
+import { format_duration, uid } from "../core/utils"
 import { useEffect, useState } from 'preact/hooks'
 import { save_audio_buffer } from '../core/local'
-import { format_duration, uid } from "../core/utils"
+import { styles } from '../style/AudioFileStyle'
 import { AudioFileProps } from '../core/types'
 import { audio_polyline } from '../core/wave'
-import { styles } from '../style/styles'
-
+import { Button } from '@motion-canvas/ui'
 
 
 export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, audios }) => {
@@ -19,7 +18,6 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, aud
           track_id: "default",
           id: uid(),
           offset: 0,
-          unsaved: false,
           duration: audio.duration
         })
       }
@@ -41,34 +39,13 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, aud
 
   }, [])
 
-  const save_recording = async () => {
-    const name = prompt("Name of audio file:")
+  const remove_recording = async () => {
+    if (!confirm(`Deleting audio file: ${audio.name}.wav`)) return
 
-    if (!name) {
-      alert("Filename cannot be empty")
-      return
+    const remove = await fetch(`/remove?name=${audio.name}`)
+    if (remove.ok) {
+      set_audios(prev => prev.filter(a => a.id !== audio.id))
     }
-
-    if (audios.some(e => e.name == name)) {
-      alert("Filename already exists")
-      return
-    }
-
-    audio.name = name
-    save_audio_buffer(audio.buffer, name)
-
-    set_audios(prev => prev.map(a => {
-      if (a.id == audio.id) {
-        a.name = name
-        a.source = `../audio/${name}.wav`
-      }
-
-      return a
-    }))
-  }
-
-  const remove_recording = () => {
-    set_audios(prev => prev.filter(a => a.id !== audio.id))
   }
 
   return <div style={styles.audio_file}>
@@ -76,25 +53,17 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, aud
       <polyline points={polyline} fill="none" stroke="rgba(255, 255, 255, 0.09)" strokeWidth={0.5} />
     </svg>
     <div style={styles.audio_file_padding}>
+
       <div style={styles.audio_file_container}>
 
         <p style={styles.audio_file_text}>{audio.name}</p>
-        <div style={{ marginTop: 3, display: "flex" }}>
-
-          {audio.source == "" &&
-            <div style={{ display: "flex" }}>
-              <Button style={{ marginRight: 5 }} onClick={save_recording}>save</Button>
-              <Button style={{ marginRight: 5 }} onClick={remove_recording}>remove</Button>
-            </div>
-          }
-
-          <Button loading={loading} onClick={place_audio}>Place</Button>
-
-        </div>
-      </div>
-      <Separator size={1} />
-      <div style={styles.audio_file_container}>
         <p style={styles.audio_duration}>{format_duration(audio.buffer.duration)}</p>
+
+      </div>
+
+      <div style={styles.audio_file_container}>
+        <Button style={{ marginBottom: 10 }} loading={loading} onClick={place_audio}>Place</Button>
+        <Button onClick={remove_recording}>remove</Button>
       </div>
     </div>
   </div>
