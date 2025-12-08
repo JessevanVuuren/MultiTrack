@@ -3,9 +3,9 @@ import { Dispatch, StateUpdater } from "preact/hooks";
 export interface Audio {
     id: string
     name: string
-    source: string
+    source?: string
     duration: number
-    recoding: boolean
+    is_recoding: boolean
 
     positions: TrackPositions[]
 

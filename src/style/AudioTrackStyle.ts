@@ -28,6 +28,15 @@ export const styles: StyleSheet = {
     borderBottomRightRadius: 2,
     boxShadow: "rgba(51, 166, 255, .2) 0px 0px 33px 1px inset"
   },
+  danger_audio: {
+    outlineWidth: "2px",
+    outline: "solid #FF0000",
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
+    boxShadow: "rgba(255, 0, 0, .2) 0px 0px 33px 1px inset"
+  },
   unsaved_audio: {
     outlineWidth: "2px",
     outline: "solid #FF5F15",

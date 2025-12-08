@@ -14,7 +14,7 @@ export const copy_audio = (s: Audio, d: Audio) => {
   d.buffer = s.buffer
   d.buffer_line = s.buffer_line
 
-  d.recoding = s.recoding
+  d.is_recoding = s.is_recoding
 }
 
 export const unlink_audio = (s: Audio): Audio => {
@@ -26,7 +26,7 @@ export const unlink_audio = (s: Audio): Audio => {
     positions: s.positions.filter(position => true),
     buffer: s.buffer,
     buffer_line: s.buffer_line,
-    recoding: s.recoding,
+    is_recoding: s.is_recoding,
   }
 }
 
@@ -48,7 +48,7 @@ export const load_audio = async (path: string, ctx: AudioContext, track_id: stri
   return build_audio(file_name_rx.exec(path)[0], buffer, path, track_id, false, false)
 }
 
-export const build_audio = (name: string, buffer: AudioBuffer, path: string, track_id: string, recoding: boolean, active: boolean): Audio => {
+export const build_audio = (name: string, buffer: AudioBuffer, path: string, track_id: string, is_recoding: boolean, active: boolean): Audio => {
   return {
     id: uid(),
     name: name,
@@ -56,7 +56,7 @@ export const build_audio = (name: string, buffer: AudioBuffer, path: string, tra
     positions: [],
     duration: buffer.duration,
 
-    recoding: recoding,
+    is_recoding: is_recoding,
 
     buffer: buffer,
     buffer_line: ""
@@ -151,7 +151,7 @@ export const build_buffer = async (ctx: AudioContext, buffer: MutableRef<AudioBu
   buffer.current = ctx.createBuffer(maxChannels, ctx.sampleRate * duration, ctx.sampleRate);
 
   audios.forEach(audio => {
-    if (audio.recoding) return;
+    if (audio.is_recoding) return;
 
     audio.positions.map(position => {
 

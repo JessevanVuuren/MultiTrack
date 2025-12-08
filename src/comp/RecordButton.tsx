@@ -21,6 +21,7 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
     if (audio_ref.current) {
       const duration = player_time.time - audio_ref.current.positions[0].offset
       audio_ref.current.duration = duration
+      audio_ref.current.positions[0].duration = duration
     }
 
     if (recoding && player_time.completion == 1) {
@@ -85,9 +86,8 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
     if (!audio_ref.current) {
       audio_ref.current = {
         id: uid(),
-        source: "",
         duration: 0,
-        recoding: true,
+        is_recoding: true,
         buffer_line: "",
         name: "recording",
 
@@ -119,7 +119,7 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
       const audio = unlink_audio(audio_ref.current)
 
       audio.buffer = buffer
-      audio.recoding = false
+      audio.is_recoding = false
 
       remove_audio(audio_ref.current.id)
       add_audio(audio)

@@ -144,7 +144,7 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
 
     throttled_call(on_scroll)
 
-    const recording = audios.some(a => a.recoding)
+    const recording = audios.some(a => a.is_recoding)
     if (!recording) {
       app.player.togglePlayback(false)
     }
