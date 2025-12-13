@@ -84,6 +84,7 @@ export type AudioTrackProps = {
     audio_ctx: AudioContext
     audios: Audio[]
     scroll: number
+    index: number
     audio: Audio
 }
 

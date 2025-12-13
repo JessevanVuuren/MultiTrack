@@ -48,7 +48,7 @@ export const styles: StyleSheet = {
   },
   audio_options_text: {
     margin: 0,
-    padding: 2
+    padding: 1
   },
   audio_track: {
     background: "rgba(255,255,255,.1)",

@@ -171,12 +171,12 @@ export const TrackLineComp: React.FC<TrackLineProps> = ({ audios, track, scroll,
     </div>
     <div data-track="track" data-id={track.id} style={styles.track_line}>
       {audios.map(audio => {
-        return audio.positions.map(position => {
+        return audio.positions.map((position, i) => {
           if (position.track_id === track.id) {
             if (audio.is_recoding) {
               return <RecordTrackComp audio={audio} />
             } else {
-              return <AudioTrackComp audio={audio} scroll={scroll} position={position} set_audios={set_audios} audio_ctx={audio_ctx} audios={audios} />
+              return <AudioTrackComp index={i} audio={audio} scroll={scroll} position={position} set_audios={set_audios} audio_ctx={audio_ctx} audios={audios} />
             }
           }
         })

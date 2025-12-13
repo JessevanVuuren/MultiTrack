@@ -1,18 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { value_to_percent, map, element_contains_pointer, uid } from "../core/utils"
+import { build_sound_line, rerender_unsaved_positions } from '../core/wave'
+import { useEffect, useMemo, useRef } from 'preact/hooks'
 import { styles } from "../style/AudioTrackStyle"
 import { usePlayerTime } from '@motion-canvas/ui'
-import { build_sound_line, rerender_unsaved_positions } from '../core/wave'
+import { save_audio_buffer } from '../core/local'
 import { AudioTrackProps } from '../core/types'
+import { get_audio_name } from '../utils/utils'
 import { Bin, Cut, Save } from '../icon/icons'
 import { Button } from '../dynamics/Button'
-import { get_audio_name } from '../utils/utils'
-import { save_audio_buffer } from '../core/local'
 
-export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, scroll, position, audio_ctx, audios }) => {
-  const curr_pos_id = useRef<string>();
+export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, scroll, position, audio_ctx, audios, index }) => {
   const cut_mode = useRef(false)
+  const canvas = useRef<HTMLCanvasElement>()
+  const element = useRef<HTMLDivElement>()
 
+  const player = usePlayerTime()
 
   const line = useMemo(() => {
     if (position?.track_cut?.buffer) {
@@ -24,11 +26,6 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
     const data = audio.buffer.getChannelData(0)
     return build_sound_line(Array.from(data), data.length * 0.005)
   }, [audio, position])
-
-  const canvas = useRef<HTMLCanvasElement>()
-  const element = useRef<HTMLDivElement>()
-
-  const player = usePlayerTime()
 
   const culled_line = () => {
 
@@ -71,53 +68,59 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
     culled_line()
   }, [canvas])
 
-  const enter_cut_mode = (e: PointerEvent) => {
-    if (!cut_mode.current && !position.track_cut) {
-      const cut_button = document.getElementById(position.id)
-      const rect = cut_button.getBoundingClientRect()
-      if (element_contains_pointer(rect, e)) {
-        curr_pos_id.current = cut_button.dataset.id
-        cut_mode.current = true
-      }
-
-    } else if (curr_pos_id.current == position.id) {
-      cut_mode.current = false
-      curr_pos_id.current = null
-
-      const track_box = element.current.getBoundingClientRect()
-      if (!element_contains_pointer(track_box, e)) return
-      const left_duration = e.offsetX / track_box.width * audio.duration
-      const right_duration = (1 - e.offsetX / track_box.width) * audio.duration
-
-
-      set_audios(prev => prev.map(a => {
-        if (a.id == audio.id) {
-
-          a.positions.push({
-            id: uid(), offset: position.offset, track_id: position.track_id, duration: left_duration, track_cut: {
-              start: 0, end: left_duration
-            }
-          })
-          a.positions.push({
-            id: uid(), offset: position.offset + left_duration, track_id: position.track_id, duration: right_duration, track_cut: {
-              start: left_duration, end: position.duration
-            }
-          })
-        }
-
-        return a
-      }))
-      remove()
-      rerender_unsaved_positions(audio_ctx, audios)
-    }
-  }
-
   useEffect(() => {
     document.addEventListener("pointerdown", enter_cut_mode)
     return () => {
       document.removeEventListener("pointerdown", enter_cut_mode)
     }
   }, [audio, set_audios, position])
+
+  const enter_cut_mode = (e: PointerEvent) => {
+    const track_box = element.current.getBoundingClientRect()
+    const cut_button = document.getElementById(position.id)
+
+    if (track_box && !element_contains_pointer(track_box, e) && cut_mode.current) {
+      cut_mode.current = false
+      return
+    }
+
+    if (!cut_mode.current && cut_button) {
+      const rect = cut_button.getBoundingClientRect()
+      if (element_contains_pointer(rect, e)) {
+        cut_mode.current = true
+      }
+
+    } else if (track_box && cut_mode.current) {
+      cut_mode.current = false
+
+      const cut_position = e.x - track_box.left
+      const left_duration = cut_position / track_box.width * position.duration
+      const right_duration = (1 - cut_position / track_box.width) * position.duration
+
+      set_audios(prev => prev.map(a => {
+        if (a.id == audio.id) {
+
+          a.positions.push({
+            id: uid(), offset: position.offset, track_id: position.track_id, duration: left_duration, track_cut: {
+              start: 0,
+              end: left_duration
+            }
+          })
+          a.positions.push({
+            id: uid(), offset: position.offset + left_duration, track_id: position.track_id, duration: right_duration, track_cut: {
+              start: left_duration,
+              end: left_duration + right_duration
+            }
+          })
+        }
+
+        return a
+      }))
+
+      remove()
+      rerender_unsaved_positions(audio_ctx, audios)
+    }
+  }
 
   const remove = () => {
     set_audios(prev => prev.map(audio => ({
@@ -127,17 +130,14 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
   }
 
   const track_action_style = () => {
-    if (audio.name === "recording") return styles.danger_audio
-    if (position.track_cut || !audio.source) return styles.unsaved_audio
-    if (curr_pos_id.current === position.id) {
-      if (cut_mode.current) return styles.cutting_mode
-    }
+    if (!audio.source) return styles.danger_audio
+    if (cut_mode.current) return styles.cutting_mode
+    if (position.track_cut) return styles.unsaved_audio
   }
 
-  const save_audio_cut = (name: string) => {
-    set_audios(prev => {
-
-      prev.push({
+  const save_audio_cut = (buffer:AudioBuffer, name: string) => {
+    set_audios(prev => [
+      ...prev, {
         id: uid(),
         name: name,
         positions: [{
@@ -150,22 +150,27 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
         is_recoding: false,
         duration: position.duration,
         source: `../audio/${name}.wav`,
-        buffer: position.track_cut.buffer,
-      })
-
-      return prev
-    })
-  }
-
-  const save_recording = (name: string) => {
-    set_audios(prev => prev.map(a => {
-      if (a.id === audio.id) {
-        audio.source = `../audio/${name}.wav`
-        audio.name = name
+        buffer: buffer,
       }
-      return audio
-    }))
+    ])
   }
+
+  // const save_recording = (name: string) => {
+  //   set_audios(prev => prev.map(a => {
+  //     if (!a.source) {
+  //       a.source = `../audio/${name}.wav`
+  //       a.name = name
+  //       a.positions = [{
+  //         id: uid(),
+  //         track_id: position.track_id,
+  //         duration: position.duration,
+  //         offset: position.offset,
+  //       }]
+  //       a.b
+  //     }
+  //     return a
+  //   }))
+  // }
 
   const save_track = () => {
     const name = get_audio_name(audios)
@@ -173,10 +178,12 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
 
     if (position?.track_cut?.buffer) {
       save_audio_buffer(position.track_cut.buffer, name)
-      save_audio_cut(name)
+      save_audio_cut(position.track_cut.buffer, name)
     } else {
       save_audio_buffer(audio.buffer, name)
-      save_recording(name)
+      save_audio_cut(audio.buffer, name)
+      // save_recording(name)
+      
     }
     remove()
   }
@@ -201,11 +208,9 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
           </div>
           <div data-audio="audio" data-id={position.id} style={{ ...styles.audio_track_options, zIndex: 11 }}>
             <Button children={<Bin />} onPointerDown={remove} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(230, 1, 88, .4)" }} />
-            {!position.track_cut && audio.source ?
-              <div id={position.id} data-id={position.id}><Button children={<Cut />} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }} /></div>
-              :
-              <Button onPointerDown={save_track} children={<Save />} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }} />
-            }
+
+            {audio.source && <div id={position.id} data-id={position.id}><Button children={<Cut />} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }} /></div>}
+            {(position?.track_cut?.buffer || !audio.source) && <Button onPointerDown={save_track} children={<Save />} style={styles.audio_options_text} hover_style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }} />}
           </div>
         </>
       }

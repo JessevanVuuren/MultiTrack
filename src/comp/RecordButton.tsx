@@ -84,12 +84,13 @@ export const RecordComp: React.FC<RecordProps> = ({ set_audios, audio_ctx }) => 
 
   const initialize_audio_ref = () => {
     if (!audio_ref.current) {
+      const id = uid()
       audio_ref.current = {
-        id: uid(),
+        id: id,
         duration: 0,
         is_recoding: true,
         buffer_line: "",
-        name: "recording",
+        name: id,
 
         positions: [{
           id: uid(),
