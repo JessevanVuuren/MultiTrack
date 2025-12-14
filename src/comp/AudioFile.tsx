@@ -39,9 +39,10 @@ export const AudioFileComp: React.FC<AudioFileProps> = ({ audio, set_audios, aud
   }, [])
 
   const remove_recording = async () => {
-    if (!confirm(`Deleting audio file: ${audio.name}.wav`)) return
+    const filename = audio.source.replace(/^.*[\\/]/, '')
+    if (!confirm(`Deleting audio file: ${filename}`)) return
 
-    const remove = await fetch(`/remove?name=${audio.name}`)
+    const remove = await fetch(`/remove?name=${encodeURIComponent(filename)}`)
     if (remove.ok) {
       set_audios(prev => prev.filter(a => a.id !== audio.id))
     }

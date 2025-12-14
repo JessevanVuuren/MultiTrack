@@ -33,7 +33,7 @@ export default function MultiTrackPlugin(): Plugin {
           }
 
           const safe_name = path.basename(file_name);
-          const file_path = path.join(audio_dir, `${safe_name}.wav`);
+          const file_path = path.join(audio_dir, safe_name);
 
           await fs.stat(file_path);
           await fs.unlink(file_path);
