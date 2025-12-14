@@ -1,6 +1,6 @@
 {
   "name": "motion-canvas-multitrack",
-  "version": "0.1.0",
+  "version": "0.0.3",
   "description": "A plug and play audio plugin for Motion Canvas",
   "homepage": "https://github.com/JessevanVuuren/MultiTrack#readme",
   "bugs": {
