@@ -48,6 +48,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "prepare": "npm run build",
     "build": "tsc && vite build && tsc -p tsconfig.client.json",
     "watch": "concurrently \"tsc --watch\" \"tsc -p tsconfig.client.json --watch\" \"npm run watch:yalc\"",
     "watch:yalc": "nodemon --watch dist --delay 1000ms --exec \"yalc push\"",
