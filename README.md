@@ -1,4 +1,4 @@
-# MultiTrack - A drag and drop audio plugin
+# MultiTrack - A drag and drop audio plugin - 0.1.0
 
 MultiTrack is a [MotionCanvas](https://github.com/motion-canvas/motion-canvas) plugin that allows you to load and arrange multiple audio files across different tracks. With support for multiple tracks, sound effects, and microphone recordings, some pretty complex audio can be created.
 
@@ -17,6 +17,7 @@ MultiTrack has a bunch of different features that make editing and recording aud
 - Activate/Deactivate audio files
 - Mute tracks
 - Drag and drop
+- Cut and save parts of a track
 
 
 ## Microphone
@@ -29,8 +30,12 @@ With the [MediaStream Recording API](https://developer.mozilla.org/en-US/docs/We
 
 Not much to say, just easy drag and drop.
 
-![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/7723043d-7e7f-4cd2-8f47-01000a7ad03f)
+![drag-and-drop](https://github.com/user-attachments/assets/7723043d-7e7f-4cd2-8f47-01000a7ad03f)
 
+
+## Cut and save parts of a track
+
+![cut-track](https://github.com/user-attachments/assets/379c4b88-65b4-4a93-841a-2f14c645284e)
 
 # Installation
 
