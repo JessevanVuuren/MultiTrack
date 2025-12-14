@@ -4,7 +4,7 @@ import { Audio, AudioHierarchyProps, MultiTrackProps, RecordProps, Track } from 
 import { element_contains_pointer, value_to_percent, throttle } from "./core/utils"
 import { load_saved_state, save_audio_buffer, save_state } from './core/local'
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
-import { check_version } from "./utils/utils"
+import { run_migration_scripts } from "./migrations/migrations"
 import { createPortal } from 'preact/compat'
 import { createElement } from 'preact'
 
@@ -66,13 +66,13 @@ const MultiTrackTab = ({ tab }: PluginTabProps) => {
 
       if (state) {
         const config = await load_saved_state("./audio/" + state)
-        check_version(config.version, pkg.version);
+        const multi_state = run_migration_scripts(config, pkg.version);
 
-        if (config) {
-          loaded_track.push(...config.tracks)
+        if (multi_state) {
+          loaded_track.push(...multi_state.tracks)
 
           loaded_audio.forEach(audio => {
-            const audio_state = config.audios.find(a => audio.name == a.name)
+            const audio_state = multi_state.audios.find(a => audio.name == a.name)
 
             if (audio_state) {
               audio_state.buffer = audio.buffer

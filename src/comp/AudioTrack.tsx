@@ -4,8 +4,7 @@ import { useEffect, useMemo, useRef } from 'preact/hooks'
 import { styles } from "../style/AudioTrackStyle"
 import { usePlayerTime } from '@motion-canvas/ui'
 import { save_audio_buffer } from '../core/local'
-import { AudioTrackProps } from '../core/types'
-import { get_audio_name } from '../utils/utils'
+import { Audio, AudioTrackProps } from '../core/types'
 import { Bin, Cut, Save } from '../icon/icons'
 import { Button } from '../dynamics/Button'
 
@@ -135,7 +134,7 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
     if (position.track_cut) return styles.unsaved_audio
   }
 
-  const save_audio_cut = (buffer:AudioBuffer, name: string) => {
+  const save_audio_cut = (buffer: AudioBuffer, name: string) => {
     set_audios(prev => [
       ...prev, {
         id: uid(),
@@ -155,22 +154,21 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
     ])
   }
 
-  // const save_recording = (name: string) => {
-  //   set_audios(prev => prev.map(a => {
-  //     if (!a.source) {
-  //       a.source = `../audio/${name}.wav`
-  //       a.name = name
-  //       a.positions = [{
-  //         id: uid(),
-  //         track_id: position.track_id,
-  //         duration: position.duration,
-  //         offset: position.offset,
-  //       }]
-  //       a.b
-  //     }
-  //     return a
-  //   }))
-  // }
+  const get_audio_name = (audios: Audio[]): string => {
+    const name = prompt("Name of audio file:")
+
+    if (!name) {
+      alert("Filename cannot be empty")
+      return
+    }
+
+    if (audios.some(e => e.name == name)) {
+      alert("Filename already exists")
+      return
+    }
+
+    return name;
+  }
 
   const save_track = () => {
     const name = get_audio_name(audios)
@@ -182,8 +180,6 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
     } else {
       save_audio_buffer(audio.buffer, name)
       save_audio_cut(audio.buffer, name)
-      // save_recording(name)
-      
     }
     remove()
   }
@@ -199,7 +195,6 @@ export const AudioTrackComp: React.FC<AudioTrackProps> = ({ audio, set_audios, s
       width: value_to_percent(position.duration, player.durationTime) + "%",
 
     }}>
-
 
       {!cut_mode.current &&
         <>

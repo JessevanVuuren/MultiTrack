@@ -64,7 +64,7 @@ const send_to_disk = (data: Export) => {
   }
 }
 
-export const load_saved_state = async (path: string): Promise<SaveState> => {
+export const load_saved_state = async (path: string) => {
 
   try {
     const raw_data = await fetch(path)
