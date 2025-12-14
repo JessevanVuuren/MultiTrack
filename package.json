@@ -46,6 +46,16 @@
       }
     }
   },
+  "typesVersions": {
+    "*": {
+      "editor-plugin": [
+        "./dist/src/index.d.ts"
+      ],
+      "exporter": [
+        "./dist/src/exporter/index.d.ts"
+      ]
+    }
+  },
   "scripts": {
     "dev": "vite",
     "prepare": "npm run build",
