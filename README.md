@@ -1,4 +1,4 @@
-# MultiTrack - A drag and drop audio plugin - 0.1.0
+# MultiTrack - A drag and drop audio plugin
 
 MultiTrack is a [MotionCanvas](https://github.com/motion-canvas/motion-canvas) plugin that allows you to load and arrange multiple audio files across different tracks. With support for multiple tracks, sound effects, and microphone recordings, some pretty complex audio can be created.
 
@@ -48,7 +48,7 @@ npm init @motion-canvas@latest
 
 Next install the npm package [motion-canvas-multitrack](https://www.npmjs.com/package/motion-canvas-multitrack)
 ```bash
-npm i motion-canvas-multitrack
+npm i motion-canvas-multitrack@latest
 ```
 
 After successfully installing the plugin, create an empty `audio` folder where audio files will be stored and created:
